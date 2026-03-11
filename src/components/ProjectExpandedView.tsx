@@ -1,382 +1,207 @@
-'use client';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X, ChevronLeft, ChevronRight, Volume2 } from 'lucide-react';
+import { useAppStore } from '@/store/appStore';
+import { useAudioStore } from '@/store/audioStore';
+import './ProjectExpandedView.css';
 
-import { useEffect, useRef, useState } from 'react';
-import { useAppStore } from '../store/appStore';
-import gsap from 'gsap';
-
-// New Component for Performance: Only plays video when visible in the gallery
-function GalleryVideo({ url }: { url: string }) {
-    const videoRef = useRef<HTMLVideoElement>(null);
-
-    useEffect(() => {
-        const observer = new IntersectionObserver(
-            ([entry]) => {
-                if (videoRef.current) {
-                    if (entry.isIntersecting) {
-                        // Play when visible
-                        videoRef.current.play().catch(e => console.warn("Gallery video play failed", e));
-                    } else {
-                        // Pause actively decoding video frames to save CPU
-                        videoRef.current.pause();
-                    }
-                }
-            },
-            { threshold: 0.5 } // Play when at least 50% visible (handles videos wider than screen)
-        );
-
-        if (videoRef.current) {
-            observer.observe(videoRef.current);
-        }
-
-        return () => observer.disconnect();
-    }, []);
-
+// Helper component for Videos
+const VideoPlayer = ({ url }: { url: string }) => {
     return (
-        <video 
-            ref={videoRef}
-            src={url} 
-            loop 
-            muted 
-            playsInline 
-            preload="metadata"
-            className="gallery-media"
+        <video
+            src={url}
+            controls
+            autoPlay
+            playsInline
+            loop
+            className="pev-media-video"
         />
     );
-}
+};
+
+// Helper component for Images
+const ImagePlayer = ({ url }: { url: string }) => {
+    return (
+        <img
+            src={url}
+            alt="Gallery Image"
+            className="pev-media-image"
+            draggable={false}
+        />
+    );
+};
+
+// Helper component for Audio
+const AudioPlayer = ({ url, title }: { url: string; title: string }) => {
+    return (
+        <div className="pev-audio-container">
+            <Volume2 className="pev-audio-icon" />
+            <h3 className="pev-audio-title">{title}</h3>
+            <audio
+                src={url}
+                controls
+                autoPlay
+                className="pev-audio-player"
+            />
+        </div>
+    );
+};
 
 export default function ProjectExpandedView() {
     const { selectedProject, setSelectedProject } = useAppStore();
-    const containerRef = useRef<HTMLDivElement>(null);
-    const contentRef = useRef<HTMLDivElement>(null);
-    const [isVisible, setIsVisible] = useState(false);
-    
-    // We keep a local copy of the project data so we can animate out smoothly before making it null
-    const [projectData, setProjectData] = useState<any>(null);
+    const setDucked = useAudioStore((state) => state.setDucked);
+    const [currentIndex, setCurrentIndex] = useState(0);
 
-    const activeProject = selectedProject || projectData;
-
+    // Reset index when a new project is selected
     useEffect(() => {
         if (selectedProject) {
-            setProjectData(selectedProject);
-            setIsVisible(true);
-            
-            // GSAP Entrance Animation
-            // Since activeProject is truthy, the refs have been attached in the commit phase prior to this useEffect
-            if (containerRef.current && contentRef.current) {
-                gsap.fromTo(containerRef.current, 
-                    { opacity: 0, backdropFilter: 'blur(0px)' }, 
-                    { opacity: 1, backdropFilter: 'blur(30px)', duration: 0.8, ease: 'power3.out' }
-                );
-
-                gsap.fromTo(contentRef.current, 
-                    { y: 50, opacity: 0, scale: 0.95 }, 
-                    { y: 0, opacity: 1, scale: 1, duration: 0.8, delay: 0.2, ease: 'power4.out' }
-                );
-            }
-        } else if (projectData && !selectedProject) {
-            // GSAP Exit Animation
-            if (containerRef.current && contentRef.current) {
-                gsap.to(containerRef.current, {
-                    opacity: 0, 
-                    backdropFilter: 'blur(0px)',
-                    duration: 0.6, 
-                    ease: 'power3.inOut',
-                    onComplete: () => {
-                        setIsVisible(false);
-                        setProjectData(null);
-                    }
-                });
-                gsap.to(contentRef.current, {
-                    y: 30,
-                    opacity: 0,
-                    scale: 0.95,
-                    duration: 0.4,
-                    ease: 'power3.in'
-                });
-            } else {
-                setIsVisible(false);
-                setProjectData(null);
-            }
+            setCurrentIndex(0);
         }
-    }, [selectedProject, projectData]); // Added projectData safely into deps
+    }, [selectedProject]);
 
-    // Wait until activeProject exists to render layout
-    if (!activeProject) return null;
+    // Handle audio ducking based on current media type
+    useEffect(() => {
+        if (!selectedProject || !selectedProject.gallery || selectedProject.gallery.length === 0) return;
+        const currentItem = selectedProject.gallery[currentIndex];
+        
+        // Duck the main track if video or audio is playing
+        if (currentItem && (currentItem.type === 'video' || currentItem.type === 'audio')) {
+            setDucked(true);
+        } else {
+            setDucked(false);
+        }
+
+        // Clean up when unmounting
+        return () => {
+            setDucked(false);
+        };
+    }, [selectedProject, currentIndex, setDucked]);
+
+    // Keyboard navigation
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (!selectedProject || !selectedProject.gallery) return;
+            
+            if (e.key === 'Escape') handleClose();
+            if (e.key === 'ArrowRight') handleNext();
+            if (e.key === 'ArrowLeft') handlePrev();
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [selectedProject, currentIndex]);
+
+    if (!selectedProject || !selectedProject.gallery || selectedProject.gallery.length === 0) return null;
+
+    const gallery = selectedProject.gallery;
+    const currentItem = gallery[currentIndex];
+    const isSingleItem = gallery.length === 1;
 
     const handleClose = () => {
         setSelectedProject(null);
     };
 
+    const handleNext = () => {
+        setCurrentIndex((prev) => (prev + 1) % gallery.length);
+    };
+
+    const handlePrev = () => {
+        setCurrentIndex((prev) => (prev - 1 + gallery.length) % gallery.length);
+    };
+
     return (
-        <div 
-            ref={containerRef}
-            className="project-overlay pointer-events-auto"
-            style={{ opacity: 0 }}
-        >
-            <div 
-                ref={contentRef}
-                className="project-content"
-                style={{ opacity: 0 }}
-            >
-                {/* Header */}
-                <div className="project-header">
-                    <div>
-                        <h2 className="project-title">
-                            {activeProject?.title}
-                        </h2>
-                        <p className="project-subtitle">
-                            {activeProject?.subtitle}
-                        </p>
+        <AnimatePresence>
+            {selectedProject && (
+                <motion.div
+                    initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
+                    animate={{ opacity: 1, backdropFilter: "blur(20px)" }}
+                    exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
+                    transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                    className="pev-overlay"
+                >
+                    {/* Header Controls */}
+                    <div className="pev-header">
+                        <motion.div 
+                            initial={{ y: -20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ delay: 0.2 }}
+                            className="pev-title-container"
+                        >
+                            <h2 className="pev-title">{selectedProject.title}</h2>
+                            <p className="pev-subtitle">{selectedProject.subtitle}</p>
+                        </motion.div>
+
+                        <motion.button
+                            initial={{ scale: 0, rotate: -90 }}
+                            animate={{ scale: 1, rotate: 0 }}
+                            transition={{ delay: 0.3, type: "spring", stiffness: 200, damping: 20 }}
+                            onClick={handleClose}
+                            className="pev-close-btn"
+                        >
+                            <X size={24} />
+                        </motion.button>
                     </div>
 
-                    <button 
-                        onClick={handleClose}
-                        className="close-btn"
-                        aria-label="Close Project"
-                    >
-                        <div className="close-icon-line line-1"></div>
-                        <div className="close-icon-line line-2"></div>
-                    </button>
-                </div>
+                    {/* Main Media Container */}
+                    <div className="pev-main">
+                        
+                        {/* Navigation Arrows */}
+                        {!isSingleItem && (
+                            <>
+                                <motion.button
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    onClick={handlePrev}
+                                    className="pev-nav-btn pev-nav-left"
+                                >
+                                    <ChevronLeft size={32} />
+                                </motion.button>
 
-                {/* Gallery Area */}
-                <div className="project-gallery hide-scrollbars">
-                    {activeProject?.gallery?.map((item: any, i: number) => (
-                        <div key={i} className="gallery-item">
-                            {item.type === 'video' ? (
-                                <GalleryVideo url={item.url} />
-                            ) : item.type === 'audio' ? (
-                                <div className="audio-wrapper flex flex-col items-center justify-center w-full h-full min-w-[300px] md:min-w-[50vw]">
-                                    <div className="audio-visualizer-mockup w-32 h-32 rounded-full border border-white/20 flex items-center justify-center mb-8 bg-white/5 shadow-[0_0_30px_rgba(255,255,255,0.1)]">
-                                        <div className="text-white/50 text-4xl animate-pulse">♫</div>
-                                    </div>
-                                    <audio 
-                                        src={item.url} 
-                                        controls 
-                                        className="w-full max-w-sm rounded"
-                                    />
-                                    <p className="text-white/50 mt-6 text-xs font-['Michroma'] truncate max-w-sm text-center tracking-widest uppercase px-4">
-                                        {item.url.split('/').pop()}
-                                    </p>
-                                </div>
-                            ) : (
-                                <img 
-                                    src={item.url} 
-                                    alt={`${activeProject?.title} Image ${i + 1}`}
-                                    className="gallery-media"
-                                    loading="lazy"
-                                />
-                            )}
-                            {/* Stylish gradient overlay */}
-                            <div className="gallery-gradient"></div>
+                                <motion.button
+                                    initial={{ opacity: 0, x: 20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    onClick={handleNext}
+                                    className="pev-nav-btn pev-nav-right"
+                                >
+                                    <ChevronRight size={32} />
+                                </motion.button>
+                            </>
+                        )}
+
+                        {/* Media Player Switcher */}
+                        <div className="pev-media-wrapper">
+                            <AnimatePresence mode="wait">
+                                <motion.div
+                                    key={currentIndex}
+                                    initial={{ opacity: 0, scale: 0.95, filter: "blur(10px)" }}
+                                    animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                                    exit={{ opacity: 0, scale: 1.05, filter: "blur(10px)" }}
+                                    transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                                    className="pev-media-wrapper"
+                                >
+                                    {currentItem.type === 'video' && <VideoPlayer url={currentItem.url} />}
+                                    {currentItem.type === 'image' && <ImagePlayer url={currentItem.url} />}
+                                    {currentItem.type === 'audio' && <AudioPlayer url={currentItem.url} title={currentItem.url.split('/').pop()?.split('.')[0] || 'Unknown Track'} />}
+                                </motion.div>
+                            </AnimatePresence>
                         </div>
-                    ))}
-                </div>
-                
-                {/* Scroll Indicator (Optional Polish) */}
-                {activeProject?.gallery?.length > 1 && (
-                    <div className="swipe-indicator">
-                        <span>Swipe to explore</span>
-                        <div className="swipe-line"></div>
                     </div>
-                )}
-            </div>
-            
-            {/* Custom Styles for scoping safely without Tailwind */}
-            <style jsx>{`
-                .project-overlay {
-                    position: fixed;
-                    top: 0;
-                    left: 0;
-                    width: 100vw;
-                    height: 100vh;
-                    z-index: 50;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    background-color: rgba(5, 7, 10, 0.85);
-                    backdrop-filter: blur(20px);
-                    overflow: hidden;
-                }
 
-                .project-content {
-                    position: relative;
-                    width: 100%;
-                    height: 100%;
-                    max-width: 100vw;
-                    padding: 2rem 1rem;
-                    display: flex;
-                    flex-direction: column;
-                }
-                
-                @media (min-width: 768px) {
-                    .project-content {
-                        padding: 3rem 4rem;
-                    }
-                }
-
-                .project-header {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    margin-bottom: 2rem;
-                    flex-shrink: 0;
-                }
-
-                .project-title {
-                    font-size: 1.5rem;
-                    font-weight: bold;
-                    color: white;
-                    letter-spacing: 0.1em;
-                    text-transform: uppercase;
-                    font-family: 'Michroma', sans-serif;
-                    margin: 0;
-                }
-                
-                @media (min-width: 768px) {
-                    .project-title {
-                        font-size: 2.5rem;
-                    }
-                }
-
-                .project-subtitle {
-                    color: rgba(255,255,255,0.6);
-                    letter-spacing: 0.1em;
-                    text-transform: uppercase;
-                    font-size: 0.75rem;
-                    font-family: 'Michroma', sans-serif;
-                    margin-top: 0.5rem;
-                }
-
-                .close-btn {
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                    width: 3rem;
-                    height: 3rem;
-                    border-radius: 50%;
-                    border: 1px solid rgba(255, 255, 255, 0.2);
-                    background: rgba(0, 0, 0, 0.4);
-                    backdrop-filter: blur(8px);
-                    cursor: pointer;
-                    transition: all 0.3s ease;
-                }
-
-                .close-btn:hover {
-                    border-color: rgba(255, 255, 255, 0.8);
-                    background: rgba(255, 255, 255, 0.15);
-                    transform: scale(1.05);
-                }
-
-                .close-icon-line {
-                    width: 1.25rem;
-                    height: 2px;
-                    background-color: white;
-                    transition: all 0.3s ease;
-                }
-
-                .line-1 {
-                    transform: rotate(45deg) translateY(1px);
-                }
-
-                .line-2 {
-                    transform: rotate(-45deg) translateY(-1px);
-                }
-
-                .project-gallery {
-                    flex: 1;
-                    display: flex;
-                    gap: 5vw;
-                    overflow-x: auto;
-                    overflow-y: hidden;
-                    padding: 0 5vw;
-                    scroll-padding: 0 5vw;
-                    scroll-snap-type: x mandatory;
-                    align-items: center;
-                    justify-content: flex-start;
-                    /* Fixed height relative to viewport to ensure it always fits the screen */
-                    height: 50vh;
-                    margin-top: auto;
-                    margin-bottom: auto;
-                }
-
-                .gallery-item {
-                    position: relative;
-                    /* Fill the gallery height completely */
-                    height: 100%;
-                    /* Width expands based on content aspect ratio */
-                    width: auto;
-                    flex: 0 0 auto;
-                    scroll-snap-align: center;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                }
-
-                @media (min-width: 768px) {
-                    .project-gallery {
-                        height: 65vh;
-                        gap: 12vw;
-                    }
-                }
-
-                .gallery-media {
-                    /* The key to no-crop: Force 100% height and let width be auto */
-                    height: 100% !important;
-                    width: auto !important;
-                    /* Never stretch, just fit the physical space */
-                    object-fit: contain;
-                    display: block;
-                    border-radius: 8px;
-                    box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.7);
-                    /* Prevents any potential flex stretching */
-                    max-width: none;
-                }
-
-                @media (max-width: 767px) {
-                    .gallery-media {
-                        /* On mobile, remove width capping to allow horizontal videos to fill height without cropping */
-                    }
-                }
-
-                .gallery-gradient {
-                    position: absolute;
-                    inset: 0;
-                    background: linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 20%);
-                    pointer-events: none;
-                }
-
-                .swipe-indicator {
-                    position: absolute;
-                    bottom: 1.5rem;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    display: flex;
-                    align-items: center;
-                    gap: 1rem;
-                    opacity: 0.6;
-                    text-transform: uppercase;
-                    font-size: 0.75rem;
-                    letter-spacing: 0.15em;
-                    color: white;
-                    font-family: 'Michroma', sans-serif;
-                }
-
-                .swipe-line {
-                    width: 4rem;
-                    height: 1px;
-                    background: linear-gradient(to right, white, transparent);
-                }
-
-                .hide-scrollbars::-webkit-scrollbar {
-                    display: none;
-                }
-                .hide-scrollbars {
-                    -ms-overflow-style: none;
-                    scrollbar-width: none;
-                }
-            `}</style>
-        </div>
+                    {/* Bottom Pagination */}
+                    {!isSingleItem && (
+                        <div className="pev-pagination">
+                            {gallery.map((_: any, idx: number) => (
+                                <button
+                                    key={idx}
+                                    onClick={() => setCurrentIndex(idx)}
+                                    className={`pev-dot ${idx === currentIndex ? 'active' : ''}`}
+                                    aria-label={`Go to item ${idx + 1}`}
+                                />
+                            ))}
+                        </div>
+                    )}
+                </motion.div>
+            )}
+        </AnimatePresence>
     );
 }

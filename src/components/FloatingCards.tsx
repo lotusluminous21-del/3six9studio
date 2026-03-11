@@ -2,7 +2,7 @@
 
 import { useRef, useState, useMemo, useEffect } from 'react';
 import { Group, MathUtils, Vector2 } from 'three';
-import { useFrame, extend, useLoader } from '@react-three/fiber';
+import { useFrame, extend, useLoader, useThree } from '@react-three/fiber';
 import { Text, useTexture, RoundedBox, useGLTF, Text3D, Center } from '@react-three/drei';
 import * as THREE from 'three';
 import { useScrollStore } from '../store/glitchStore';
@@ -74,6 +74,8 @@ export default function FloatingCards() {
 }
 
 function SequenceLogo({ index, radius, ySpacing, twistRate }: { index: number, radius: number, ySpacing: number, twistRate: number }) {
+    const { size } = useThree();
+    const isMobile = size.width < 768;
     const angle = index * twistRate;
     const y = -index * ySpacing;
 
@@ -195,7 +197,7 @@ function SequenceLogo({ index, radius, ySpacing, twistRate }: { index: number, r
                         <Text3D
                             ref={textRef}
                             font={font as any}
-                            size={0.55}
+                            size={isMobile ? 0.3 : 0.55}
                             height={0.1}
                             curveSegments={12}
                             bevelEnabled
@@ -226,6 +228,8 @@ function SequenceLogo({ index, radius, ySpacing, twistRate }: { index: number, r
 }
 
 function SequenceText({ index, radius, ySpacing, twistRate }: { index: number, radius: number, ySpacing: number, twistRate: number }) {
+    const { size } = useThree();
+    const isMobile = size.width < 768;
     const angle = index * twistRate;
     const y = -index * ySpacing;
 
@@ -303,7 +307,7 @@ function SequenceText({ index, radius, ySpacing, twistRate }: { index: number, r
 
                         ref={textRef}
                         font={font as any}
-                        size={0.5}
+                        size={isMobile ? 0.25 : 0.5}
                         height={0.15}
                         curveSegments={12}
                         bevelEnabled

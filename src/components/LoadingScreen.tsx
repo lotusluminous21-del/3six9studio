@@ -3,10 +3,12 @@
 import { useEffect, useState } from 'react';
 import { useProgress } from '@react-three/drei';
 import { useAppStore } from '../store/appStore';
+import { useAudioStore } from '../store/audioStore';
 
 export default function LoadingScreen() {
     const { progress, active, loaded, item } = useProgress();
     const { isLoaded, setIsLoaded, isEntered, enter } = useAppStore();
+    const setPlaying = useAudioStore((state) => state.setPlaying);
     const [minTimeElapsed, setMinTimeElapsed] = useState(false);
     const [mounted, setMounted] = useState(false);
 
@@ -70,7 +72,10 @@ export default function LoadingScreen() {
                         </div>
                     ) : (
                         <button
-                            onClick={() => enter(performance.now() / 1000)} // Pass time in seconds
+                            onClick={() => {
+                                enter(performance.now() / 1000); // Pass time in seconds
+                                setPlaying(true);
+                            }}
                             className="enter-btn"
                         >
                             Enter

@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useMemo } from 'react';
-import { useFrame } from '@react-three/fiber';
+import { useFrame, useThree } from '@react-three/fiber';
 import { useGLTF, Text } from '@react-three/drei';
 import * as THREE from 'three';
 import { useScrollStore } from '../store/glitchStore';
@@ -10,6 +10,8 @@ import { useAppStore } from '../store/appStore';
 export default function IntroSection() {
     // The logo GLTF is loaded from public directory
     const { scene } = useGLTF('/model.glb', 'https://www.gstatic.com/draco/v1/decoders/') as any;
+    const { size } = useThree();
+    const isMobile = size.width < 768;
 
     const logoRef = useRef<THREE.Group>(null);
     const textRef = useRef<THREE.Mesh>(null);
@@ -102,7 +104,7 @@ export default function IntroSection() {
                 position={[0, -2.5, 0]} // Placed closer to the logo
                 rotation={[0, Math.PI / 2, 0]} // Face the camera (+X)
                 font="/Michroma-Regular.ttf"
-                fontSize={0.5}
+                fontSize={isMobile ? 0.35 : 0.5}
                 maxWidth={8}
                 lineHeight={1.1}
                 textAlign="center"

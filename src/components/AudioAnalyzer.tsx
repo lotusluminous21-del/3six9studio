@@ -89,6 +89,13 @@ export default function AudioAnalyzer() {
         const dataArray = new Uint8Array(bufferLength);
 
         const store = useAudioStore.getState();
+        
+        // Handle smooth audio ducking
+        if (audioRef.current) {
+            const targetVolume = store.isDucked ? 0.1 : 1.0;
+            audioRef.current.volume += (targetVolume - audioRef.current.volume) * 0.1;
+        }
+
         if (store.isPlaying) {
             analyzerRef.current.getByteFrequencyData(dataArray);
         }

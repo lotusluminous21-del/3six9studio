@@ -12,7 +12,7 @@ export async function GET() {
         // Read top-level directories
         const entries = fs.readdirSync(mediaBaseDir, { withFileTypes: true });
         const categories = entries
-            .filter(dirent => dirent.isDirectory() && dirent.name.toLowerCase() !== 'music')
+            .filter(dirent => dirent.isDirectory())
             .map(dirent => dirent.name);
 
         const galleryData = categories.map((category, index) => {

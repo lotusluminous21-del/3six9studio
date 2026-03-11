@@ -77,9 +77,6 @@ export default function SidebarUI() {
         )}
       </ul>
 
-      <button className="ask-btn">
-        ASK ME ANYTHING...
-      </button>
 
       <style jsx>{`
         .sidebar-ui {
@@ -191,35 +188,6 @@ export default function SidebarUI() {
           }
         }
 
-        .ask-btn {
-          margin-top: 1rem;
-          background: transparent;
-          border: 1px solid rgba(255, 255, 255, 0.15);
-          border-radius: 30px;
-          padding: 0.75rem 1.5rem;
-          color: rgba(255, 255, 255, 0.6);
-          font-family: 'Inter', 'Outfit', 'Satoshi', sans-serif;
-          font-weight: 400;
-          font-size: 0.8rem;
-          cursor: pointer;
-          align-self: flex-start;
-          transition: all 0.3s ease;
-        }
-
-        @media (max-width: 768px) {
-          .ask-btn {
-            align-self: center;
-            padding: 0.5rem 1.25rem;
-            font-size: 0.7rem;
-            margin-top: 0.5rem;
-          }
-        }
-
-        .ask-btn:hover {
-          background: rgba(255, 255, 255, 0.1);
-          border-color: rgba(255, 255, 255, 0.8);
-          color: rgba(255, 255, 255, 1);
-        }
       `}</style>
     </aside>
   );
