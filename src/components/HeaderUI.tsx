@@ -58,7 +58,7 @@ export default function HeaderUI() {
       }}
     >
       <div className="nav-container pointer-events-auto">
-        <button className="nav-pill">
+        <button className="nav-pill" onClick={() => useAppStore.getState().setIsWorkContactOpen(true)}>
           WORK <span className="squiggle">—</span> CONTACT
         </button>
       </div>

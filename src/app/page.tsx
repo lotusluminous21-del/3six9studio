@@ -5,6 +5,7 @@ import HeaderUI from '@/components/HeaderUI';
 import SidebarUI from '@/components/SidebarUI';
 import LoadingScreen from '@/components/LoadingScreen';
 import ProjectExpandedView from '@/components/ProjectExpandedView';
+import WorkContactView from '@/components/WorkContactView';
 
 // Dynamically import the Scene to avoid SSR issues with Three.js
 const Scene = dynamic(() => import('@/components/Scene'), {
@@ -22,6 +23,7 @@ export default function Home() {
 
             <div className="ui-container">
                 <ProjectExpandedView />
+                <WorkContactView />
                 <HeaderUI />
                 <SidebarUI />
             </div>
