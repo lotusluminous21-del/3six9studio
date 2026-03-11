@@ -25,7 +25,8 @@
   },
   "overrides": {
     "motion-dom": "12.4.11",
-    "motion-utils": "12.4.10"
+    "motion-utils": "12.4.10",
+    "@react-three/fiber": "$@react-three/fiber"
   },
   "devDependencies": {
     "@types/node": "^20",
