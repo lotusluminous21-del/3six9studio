@@ -4,14 +4,17 @@ import { useRef, useState, useMemo, useEffect } from 'react';
 import { Group, MathUtils, Vector2 } from 'three';
 import { useFrame, extend, useLoader, useThree } from '@react-three/fiber';
 import { Text, useTexture, RoundedBox, useGLTF, Text3D, Center } from '@react-three/drei';
+import { motion } from 'framer-motion-3d';
 import * as THREE from 'three';
 import { useScrollStore } from '../store/glitchStore';
 import { useAudioStore } from '../store/audioStore';
 import { useAppStore } from '../store/appStore';
 import { HelixMaterial } from './shaders/HelixMaterial';
-import { TTFLoader } from 'three/addons/loaders/TTFLoader.js';
 import { OrganicTextMaterial } from './shaders/OrganicTextMaterial';
 import { BannerMaterial } from './shaders/BannerMaterial';
+import { ThumbnailMaterial } from './shaders/ThumbnailMaterial';
+import { TTFLoader } from 'three/addons/loaders/TTFLoader.js';
+import { MotionValue, useTransform } from 'framer-motion';
 
 // Preload the font
 useLoader.preload(TTFLoader, '/Michroma-Regular.ttf');
@@ -21,11 +24,12 @@ declare module '@react-three/fiber' {
         helixMaterial: any;
         organicTextMaterial: any;
         bannerMaterial: any;
+        thumbnailMaterial: any;
     }
 }
 
 
-extend({ HelixMaterial, OrganicTextMaterial, BannerMaterial });
+extend({ HelixMaterial, OrganicTextMaterial, BannerMaterial, ThumbnailMaterial });
 
 
 export default function FloatingCards() {
@@ -180,11 +184,27 @@ function SequenceLogo({ index, radius, ySpacing, twistRate }: { index: number, r
         }
     });
 
+    const isEntered = useAppStore(s => s.isEntered);
+    const delay = 0.5; // Offset logo animation slightly
+
     return (
         <group ref={groupRef} position={[0, y, 0]} rotation={[0, -angle + Math.PI / 2, 0]}>
             <group position={[0, 0.8, radius]}>
                 {/* Individual components centered independently at origin [0,0,z] */}
-                <group ref={unitRef}>
+                <motion.group 
+                    ref={unitRef as any}
+                    {...({
+                        initial: { opacity: 0, scale: 0.8 },
+                        animate: { 
+                            opacity: isEntered ? 1 : 0,
+                            scale: isEntered ? 1 : 0.8
+                        },
+                        transition: {
+                            opacity: { delay, duration: 1.5, ease: "easeInOut" },
+                            scale: { delay, duration: 1.8, type: "spring", bounce: 0.4 }
+                        }
+                    } as any)}
+                >
                     {/* Logo — centered explicitly */}
                     <Center>
                         <group ref={logoRef} scale={[0.02, 0.02, 0.02]}>
@@ -199,12 +219,12 @@ function SequenceLogo({ index, radius, ySpacing, twistRate }: { index: number, r
                             font={font as any}
                             size={isMobile ? 0.3 : 0.55}
                             height={0.1}
-                            curveSegments={12}
+                            curveSegments={6}
                             bevelEnabled
                             bevelThickness={0.03}
                             bevelSize={0.01}
                             bevelOffset={0}
-                            bevelSegments={5}
+                            bevelSegments={2}
                             lineHeight={1.0}
                             letterSpacing={-0.06}
                         >
@@ -221,7 +241,7 @@ function SequenceLogo({ index, radius, ySpacing, twistRate }: { index: number, r
                             />
                         </Text3D>
                     </group>
-                </group>
+                </motion.group>
             </group>
         </group>
     );
@@ -285,10 +305,27 @@ function SequenceText({ index, radius, ySpacing, twistRate }: { index: number, r
         }
     });
 
+    const isEntered = useAppStore(s => s.isEntered);
+    const delay = 1.8; // Banner and text come in later
 
     return (
         <group ref={groupRef} position={[0, y, 0]} rotation={[0, -angle + Math.PI / 2, 0]}>
-            <group position={[0, 0, radius]}>
+            <motion.group 
+                position={[0, 0, radius]}
+                {...({
+                    initial: { opacity: 0, scale: 0.9, y: 1 },
+                    animate: { 
+                        opacity: isEntered ? 1 : 0,
+                        scale: isEntered ? 1 : 0.9,
+                        y: isEntered ? 0 : 1
+                    },
+                    transition: {
+                        opacity: { delay, duration: 1.0 },
+                        scale: { delay, duration: 1.2, type: "spring", bounce: 0.2 },
+                        y: { delay, duration: 1.0, type: "spring", bounce: 0.1 }
+                    }
+                } as any)}
+            >
                 <Center>
                     {/* The Banner Stage */}
                     <mesh position={[0, 0, -0.3]} rotation={[0, 0, 0]}>
@@ -309,12 +346,12 @@ function SequenceText({ index, radius, ySpacing, twistRate }: { index: number, r
                         font={font as any}
                         size={isMobile ? 0.25 : 0.5}
                         height={0.15}
-                        curveSegments={12}
+                        curveSegments={6}
                         bevelEnabled
                         bevelThickness={0.05}
                         bevelSize={0.02}
                         bevelOffset={0}
-                        bevelSegments={5}
+                        bevelSegments={2}
                         lineHeight={0.45}
                         letterSpacing={0.01}
                     >
@@ -331,7 +368,7 @@ function SequenceText({ index, radius, ySpacing, twistRate }: { index: number, r
                         />
                     </Text3D>
                 </Center>
-            </group>
+            </motion.group>
         </group>
     );
 }
@@ -376,10 +413,20 @@ function Card({ data, position, angle, index }: {
             vid.setAttribute('loop', 'true');
             vid.setAttribute('muted', 'true');
             vid.setAttribute('playsinline', 'true');
-            return vid; // Playback handled by useFrame
+            return vid;
         }
         return null;
     });
+
+    // MEMOIZE TEXTURE: This is critical. Prevent creating a new texture object on every re-render.
+    const videoTexture = useMemo(() => {
+        if (!video) return null;
+        const vt = new THREE.VideoTexture(video);
+        vt.minFilter = THREE.LinearFilter;
+        vt.magFilter = THREE.LinearFilter;
+        vt.format = THREE.RGBAFormat;
+        return vt;
+    }, [video]);
 
     const entranceRef = useRef({ visibility: 0 });
     const videoPlaying = useRef(false);
@@ -390,19 +437,6 @@ function Card({ data, position, angle, index }: {
         const { isEntered, entranceStartTime } = useAppStore.getState();
         const t = isEntered && entranceStartTime ? (performance.now() / 1000) - entranceStartTime : 0;
 
-        // --- NARRATIVE BLOSSOM ANIMATION ---
-        // Cards pop into existence starting at 2.2s (after helix and banner)
-        const blossomStartT = 2.2 + index * 0.15;
-        const blossomDuration = 0.4; // Very snappy pop
-        const blossomProgress = THREE.MathUtils.clamp((t - blossomStartT) / blossomDuration, 0, 1);
-        const easedBlossom = THREE.MathUtils.clamp(blossomProgress, 0, 1);
-
-        // Very snappy, elastic pop for scale (overshoots noticeably then settles)
-        const c1 = 1.70158;
-        const c3 = c1 + 1;
-        const p = blossomProgress;
-        const popScale = p === 0 ? 0 : p === 1 ? 1 : 1 + c3 * Math.pow(p - 1, 3) + c1 * Math.pow(p - 1, 2);
-
         // --- SCROLL-DRIVEN ENTRANCE ANIMATION ---
         cardRef.current.getWorldPosition(_cardWorldPos.current);
         const camDist = state.camera.position.distanceTo(_cardWorldPos.current);
@@ -412,8 +446,8 @@ function Card({ data, position, angle, index }: {
         
         // Video performance optimization & robust playback state
         if (video) {
-            // Play video when card is visible and blossomed, pause otherwise
-            if (targetVis === 1 && easedBlossom > 0) {
+            // Play video when card is visible
+            if (targetVis === 1) {
                 if (!videoPlaying.current || video.paused) {
                     video.play().catch(e => console.warn("Video play failed:", e));
                     videoPlaying.current = true;
@@ -434,54 +468,39 @@ function Card({ data, position, angle, index }: {
         const scrollVis = entranceRef.current.visibility;
 
         // --- ELEGANT SCALE (Card Pop) ---
-        // From 0 visibility directly to popping into existence
-        let baseS = THREE.MathUtils.lerp(0.001, 1.0, popScale) * scrollVis;
-        let hoverS = hovered && easedBlossom > 0.9 ? 0.08 : 0.0;
-        let targetScale = Math.max(0.001, baseS + hoverS); // Prevent 0 scale matrix issues
+        // Handled by Framer Motion now. Only adding audio reactive bumps.
+        let targetScale = 1.0; 
 
         const { smoothedSnare, smoothedKick } = useAudioStore.getState();
         if (smoothedSnare > 0.05) targetScale += smoothedSnare * 0.04;
         if (smoothedKick > 0.05) targetScale += smoothedKick * 0.04;
 
-        cardRef.current.scale.setScalar(
-            THREE.MathUtils.lerp(cardRef.current.scale.x, targetScale, 8 * delta)
-        );
+        cardRef.current.scale.setScalar(targetScale);
 
         // --- SMOOTH ORGANIC ROTATION ---
         const organicFloatY = Math.sin(t * 1.5 + angle) * 0.02;
         const organicFloatX = Math.cos(t * 1.2 + angle) * 0.015;
 
-        const baseRotY = -angle + Math.PI / 2;
-
-        cardRef.current.rotation.y = THREE.MathUtils.lerp(
-            cardRef.current.rotation.y,
-            baseRotY + organicFloatY,
-            5 * delta
-        );
+        // Base rot handled by Motion, but we add organic floating relative to the current rotation
         cardRef.current.rotation.x = THREE.MathUtils.lerp(
             cardRef.current.rotation.x,
             organicFloatX,
             5 * delta
         );
 
-        // --- IMAGE REVEAL ---
+        // --- IMAGE REVEAL & BLENDING ---
         if (imageMatRef.current) {
-            imageMatRef.current.opacity = scrollVis * easedBlossom; // Only show image when blossomed
-            // From muted/dim to bright and clear
-            const brightness = hovered ? 1.05 : 0.65;
-            _targetColor.current.setRGB(brightness, brightness, brightness);
-            imageMatRef.current.color.lerp(_targetColor.current, 5 * delta);
+            imageMatRef.current.uOpacity = scrollVis;
+            imageMatRef.current.uTime = t;
+            imageMatRef.current.uHover = THREE.MathUtils.lerp(
+                imageMatRef.current.uHover || 0,
+                hovered ? 1.0 : 0.0,
+                5 * delta
+            );
         }
 
         // --- TEXT DISSOLVE & SHIFT ---
-        if (textGroupRef.current) {
-            const targetTextY = hovered ? -0.15 : 0;
-            const targetTextZ = hovered ? 0.05 : 0.15;
-            textGroupRef.current.position.y = THREE.MathUtils.lerp(textGroupRef.current.position.y, targetTextY, 5 * delta);
-            textGroupRef.current.position.z = THREE.MathUtils.lerp(textGroupRef.current.position.z, targetTextZ, 5 * delta);
-        }
-
-        const targetTextOpacity = (hovered ? 0.0 : 1.0) * scrollVis * easedBlossom; // Text only post-blossom
+        const targetTextOpacity = (hovered ? 0.0 : 1.0) * scrollVis;
         if (textMatTitleRef.current) {
             textMatTitleRef.current.opacity = THREE.MathUtils.lerp(textMatTitleRef.current.opacity, targetTextOpacity, 6 * delta);
         }
@@ -495,23 +514,41 @@ function Card({ data, position, angle, index }: {
             glassMatRef.current.roughness = glassRoughness;
 
             // Pop directly as glass
-            glassMatRef.current.opacity = 0.95 * easedBlossom;
+            glassMatRef.current.opacity = 0.95;
             glassMatRef.current.emissiveIntensity = 0.0;
 
             // Adjust clearcoat based on blossom
-            glassMatRef.current.clearcoat = easedBlossom;
+            glassMatRef.current.clearcoat = 1.0;
         }
     });
 
     const baseW = 4.5;
     const baseH = 2.7;
     const boundsScale = 1.4;
+    
+    // Framer Motion spring config
+    const springConfig = { type: 'spring', stiffness: 200, damping: 15, mass: 1.2 };
+    const delay = 2.2 + index * 0.15; // Delay blossom relative to index
 
     return (
-        <group
-            ref={cardRef}
+        <motion.group
+            ref={cardRef as any}
             position={position}
-            onPointerOver={(e) => {
+            userData={{ id: `project-${data.id}` }} // Storing id for potential future use instead of layoutId
+            // Entrance & Hover states declarative
+            {...({
+                initial: { scale: 0.001, rotateY: -angle + Math.PI / 2 },
+                animate: { 
+                    scale: hovered ? 1.05 : 1.0, 
+                    rotateY: -angle + Math.PI / 2 + (hovered ? (index % 2 === 0 ? 0.1 : -0.1) : 0),
+                },
+                transition: {
+                    ...springConfig,
+                    scale: { delay: hovered ? 0 : delay, ...springConfig }, // Delay only on mount
+                    rotateY: { delay: hovered ? 0 : delay, ...springConfig }
+                }
+            } as any)}
+            onPointerOver={(e: any) => {
                 e.stopPropagation();
                 setHovered(true);
                 document.body.style.cursor = 'pointer';
@@ -520,7 +557,7 @@ function Card({ data, position, angle, index }: {
                 setHovered(false);
                 document.body.style.cursor = 'auto';
             }}
-            onClick={(e) => {
+            onClick={(e: any) => {
                 e.stopPropagation();
                 // Set the selected project in the global store when tapped/clicked
                 useAppStore.getState().setSelectedProject(data);
@@ -550,19 +587,32 @@ function Card({ data, position, angle, index }: {
             <group ref={imageGroupRef} position={[0, 0, 0.08]} raycast={() => null}>
                 <mesh>
                     <planeGeometry args={[baseW, baseH]} />
-                    <meshBasicMaterial
+                    <thumbnailMaterial
                         ref={imageMatRef}
-                        map={isVideo && video ? new THREE.VideoTexture(video) : texture}
-                        color={isAudio ? "#111" : "#fff"}
+                        uTexture={isVideo ? videoTexture : texture}
+                        uColor={isAudio ? new THREE.Color("#111") : new THREE.Color("#fff")}
+                        uOpacity={0}
+                        uTime={0}
+                        uHover={0}
                         transparent={true}
-                        opacity={0}
-                        toneMapped={false}
                     />
                 </mesh>
             </group>
 
             {/* Content Overlay */}
-            <group ref={textGroupRef} position={[0, 0, 0.15]} raycast={() => null}>
+            <motion.group 
+                ref={textGroupRef as any} 
+                position={[0, 0, 0.15]} 
+                raycast={() => null}
+                {...({
+                    initial: { y: 0, z: 0.15 },
+                    animate: { 
+                        y: hovered ? -0.15 : 0, 
+                        z: hovered ? 0.05 : 0.15 
+                    },
+                    transition: springConfig
+                } as any)}
+            >
                 <Text
                     fontSize={0.35}
                     anchorX="center"
@@ -595,7 +645,7 @@ function Card({ data, position, angle, index }: {
                         transparent={true}
                     />
                 </Text>
-            </group>
-        </group>
+            </motion.group>
+        </motion.group>
     );
 }

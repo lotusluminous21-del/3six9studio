@@ -4,7 +4,7 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
   },
-  /* config options here */
+  transpilePackages: ["framer-motion", "framer-motion-3d", "motion-dom", "motion-utils"],
 };
 
 export default nextConfig;

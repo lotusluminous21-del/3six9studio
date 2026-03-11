@@ -113,13 +113,23 @@ export default function ProjectExpandedView() {
         <AnimatePresence>
             {selectedProject && (
                 <motion.div
-                    initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
+                    initial={{ opacity: 0 }}
                     animate={{ opacity: 1, backdropFilter: "blur(20px)" }}
                     exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
                     transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
                     className="pev-overlay"
                 >
-                    {/* Header Controls */}
+                    <motion.div
+                        layoutId={`project-${selectedProject.id}`}
+                        className="pev-card-container"
+                        style={{
+                            width: '100%',
+                            height: '100%',
+                            display: 'flex',
+                            flexDirection: 'column'
+                        }}
+                    >
+                        {/* Header Controls */}
                     <div className="pev-header">
                         <motion.div 
                             initial={{ y: -20, opacity: 0 }}
@@ -200,6 +210,7 @@ export default function ProjectExpandedView() {
                             ))}
                         </div>
                     )}
+                    </motion.div>
                 </motion.div>
             )}
         </AnimatePresence>

@@ -17,33 +17,46 @@ export async function GET() {
 
         const galleryData = categories.map((category, index) => {
             const categoryPath = path.join(mediaBaseDir, category);
-            const files = fs.readdirSync(categoryPath);
+            const files = fs.readdirSync(categoryPath).filter(f => !f.startsWith('.'));
             
             // Map files to valid URLs and detect type
             const gallery = files.map(file => {
                 const ext = path.extname(file).toLowerCase();
+                const basename = path.parse(file).name;
                 let type = 'image';
+                let thumbUrl = `/3six9/${category}/${file}`; // fallback to original
+
                 if (['.mp4', '.webm'].includes(ext)) {
                     type = 'video';
+                    const potentialThumb = path.join(publicDir, 'thumbnails', category, `${basename}.thumb.mp4`);
+                    if (fs.existsSync(potentialThumb)) {
+                        thumbUrl = `/thumbnails/${category}/${basename}.thumb.mp4`;
+                    }
                 } else if (['.mp3', '.wav'].includes(ext)) {
                     type = 'audio';
+                } else if (['.jpg', '.jpeg', '.png', '.webp'].includes(ext)) {
+                    const potentialThumb = path.join(publicDir, 'thumbnails', category, `${basename}.thumb.jpg`);
+                    if (fs.existsSync(potentialThumb)) {
+                        thumbUrl = `/thumbnails/${category}/${basename}.thumb.jpg`;
+                    }
                 }
                 
                 return {
                     type,
-                    url: `/3six9/${category}/${file}`
+                    url: `/3six9/${category}/${file}`,
+                    thumbnail: thumbUrl
                 };
             });
 
             // If empty, return null or handle gracefully
             if (gallery.length === 0) return null;
 
-            // First item used for card cover
+            // Use thumbnail for card cover (image field) to massively improve R3F performance
             return {
                 id: index,
                 title: category.toUpperCase(),
                 subtitle: `COLLECTION ${index + 1}`,
-                image: gallery[0].url, // Will be handled correctly in FloatingCards for videos/audio
+                image: gallery[0].thumbnail, 
                 gallery: gallery
             };
         }).filter(Boolean); // Remove any null empty categories

@@ -3,6 +3,7 @@
 import { useRef, useMemo } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useGLTF, Text } from '@react-three/drei';
+import { motion } from 'framer-motion-3d';
 import * as THREE from 'three';
 import { useScrollStore } from '../store/glitchStore';
 import { useAppStore } from '../store/appStore';
@@ -68,53 +69,58 @@ export default function IntroSection() {
         const fadeOutProgress = THREE.MathUtils.clamp((currentScrollProgress - 0.15) / 0.10, 0, 1);
         const logoVisibility = 1.0 - fadeOutProgress;
 
-        // Narrative Entrance Fade In (when site loads)
-        const entranceFade = THREE.MathUtils.clamp((t - 0.5) / 1.5, 0, 1);
-        const finalOpacity = logoVisibility * entranceFade;
-
         // Text fades in smoothly from the start and fades out together with logo
         if (textRef.current) {
-            (textRef.current as any).fillOpacity = textFadeProgress * finalOpacity;
-
-            // Breathing scale animation (subtle)
-            // Range: 0.98 to 1.02
-            const breatheScale = 1.0 + Math.sin(state.clock.elapsedTime * 1.5) * 0.02;
-            textRef.current.scale.setScalar(breatheScale);
+            (textRef.current as any).fillOpacity = textFadeProgress * logoVisibility * (isEntered ? 1.0 : 0.0);
         }
 
-        logoRef.current.visible = finalOpacity > 0;
-
         // Update opacity
-        clonedLogo.crystalMaterial.opacity = finalOpacity;
+        clonedLogo.crystalMaterial.opacity = logoVisibility * (isEntered ? 1.0 : 0.0);
     });
+
+    const isEntered = useAppStore(s => s.isEntered);
 
     return (
         // The intro group is placed exactly where the camera starts (Y=15, Z=-10)
         // Everything naturally scrolls up as the camera descends.
         <group position={[0, 15, -10]}>
-            {/* The Logo Group */}
-            {/* Set a fixed prominent scale of 0.08, matching the user requested larger size */}
-            <group ref={logoRef} position={[0, 0, 0]} scale={[0.08, 0.08, 0.08]}>
-                <primitive object={clonedLogo.clone} />
-            </group>
-
-            {/* The 3D Text Overlay */}
-            <Text
-                ref={textRef as any}
-                position={[0, -2.5, 0]} // Placed closer to the logo
-                rotation={[0, Math.PI / 2, 0]} // Face the camera (+X)
-                font="/Michroma-Regular.ttf"
-                fontSize={isMobile ? 0.35 : 0.5}
-                maxWidth={8}
-                lineHeight={1.1}
-                textAlign="center"
-                color="white"
-                fillOpacity={0} // Drei Text uses fillOpacity for transparency
-                anchorX="center"
-                anchorY="middle"
+            <motion.group 
+                {...({
+                    initial: { opacity: 0, scale: 0.8 },
+                    animate: { 
+                        opacity: isEntered ? 1 : 0, 
+                        scale: isEntered ? 1 : 0.8 
+                    },
+                    transition: { 
+                        opacity: { duration: 1.5, delay: 0.5 },
+                        scale: { duration: 2.0, delay: 0.5, type: 'spring', bounce: 0.2 }
+                    }
+                } as any)}
             >
-                Cultivating synthetic realities. Where raw data blooms into living ecosystems.
-            </Text>
+                {/* The Logo Group */}
+                {/* Set a fixed prominent scale of 0.08, matching the user requested larger size */}
+                <group ref={logoRef} position={[0, 0, 0]} scale={[0.08, 0.08, 0.08]}>
+                    <primitive object={clonedLogo.clone} />
+                </group>
+
+                {/* The 3D Text Overlay */}
+                <Text
+                    ref={textRef as any}
+                    position={[0, -2.5, 0]} // Placed closer to the logo
+                    rotation={[0, Math.PI / 2, 0]} // Face the camera (+X)
+                    font="/Michroma-Regular.ttf"
+                    fontSize={isMobile ? 0.35 : 0.5}
+                    maxWidth={8}
+                    lineHeight={1.1}
+                    textAlign="center"
+                    color="white"
+                    fillOpacity={0} // Drei Text uses fillOpacity for transparency
+                    anchorX="center"
+                    anchorY="middle"
+                >
+                    Cultivating synthetic realities. Where raw data blooms into living ecosystems.
+                </Text>
+            </motion.group>
         </group>
     );
 }

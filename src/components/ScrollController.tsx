@@ -33,8 +33,12 @@ export default function ScrollController() {
     useFrame((state, delta) => {
         const offset = scroll.offset;
 
+        // Clamp velocity to prevent extreme visual glitches and overdraw performance hits during abrupt jumps
+        const velocity = Math.abs(scroll.delta) / Math.max(delta, 0.001);
+        const clampedVelocity = Math.min(velocity, 2.0);
+
         useScrollStore.setState({
-            scrollVelocity: Math.abs(scroll.delta) / Math.max(delta, 0.001),
+            scrollVelocity: clampedVelocity,
             currentScrollProgress: offset
         });
 
