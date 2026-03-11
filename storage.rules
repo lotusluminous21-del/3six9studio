@@ -1,0 +1,14 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      // Publicly readable so our Next.js frontend can serve the gallery videos/audio to any visitor 
+      allow read: if true;
+      
+      // No client-side uploads allowed for maximum security. 
+      // Our Python backend admin script bypasses these rules anyway!
+      allow write: if false;
+    }
+  }
+}

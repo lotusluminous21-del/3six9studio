@@ -39,3 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# media assets (now purely hosted on Firebase Storage)
+/public/3six9
+/public/thumbnails
+/public/audio

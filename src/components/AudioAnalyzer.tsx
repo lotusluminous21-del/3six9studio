@@ -16,7 +16,7 @@ export default function AudioAnalyzer() {
 
     // Use Three's AudioLoader via useLoader so it's tracked by useProgress
     // This will block the loading screen until the audio is ready
-    const audioPath = '/audio/coldsick.mp3';
+    const audioPath = 'https://storage.googleapis.com/six9studio.firebasestorage.app/audio/coldsick.mp3';
 
     useEffect(() => {
         // We still use HTMLAudioElement for easier playback control and streaming
