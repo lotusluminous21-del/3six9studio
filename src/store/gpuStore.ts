@@ -28,7 +28,11 @@ export const useGPUStore = create<GPUState>((set, get) => ({
                 quality = 'high';
             }
             set({ tier, quality, detected: true });
-        } catch {
+            
+            // Log successful detection for remote debugging
+            console.log(`[GPU Diagnostic] Tier: ${tier}, Quality: ${quality}, Device: ${gpuTier.type}`);
+        } catch (error) {
+            console.error('[GPU Diagnostic] Detection failed, defaulting to high quality:', error);
             // If detection fails, assume high quality (current behavior)
             set({ tier: 3, quality: 'high', detected: true });
         }
