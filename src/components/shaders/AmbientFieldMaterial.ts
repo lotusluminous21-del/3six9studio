@@ -2,7 +2,6 @@ import { shaderMaterial } from '@react-three/drei';
 import * as THREE from 'three';
 
 const vertexShader = `
-    precision mediump float;
     varying vec2 vUv;
     varying vec3 vWorldPosition;
 
@@ -15,7 +14,6 @@ const vertexShader = `
 `;
 
 const fragmentShader = `
-    precision mediump float;
     uniform float uTime;
     uniform float uScrollProgress;
     uniform float uEntrance;

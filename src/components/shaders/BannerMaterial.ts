@@ -2,7 +2,6 @@ import { shaderMaterial } from '@react-three/drei';
 import * as THREE from 'three';
 
 const vertexShader = `
-    precision mediump float;
     uniform float uTime;
     uniform float uRadius;
     uniform float uCurvature;
@@ -98,7 +97,6 @@ const vertexShader = `
 `;
 
 const fragmentShader = `
-    precision mediump float;
     uniform float uTime;
     uniform float uOpacity;
     

@@ -23,7 +23,6 @@ const sharedVertexLogic = `
 `;
 
 const vertexShader = `
-    precision mediump float;
     uniform float uTime;
     uniform float uScrollVelocity;
     uniform float uHover;
@@ -44,8 +43,7 @@ ${sharedVertexLogic}
 `;
 
 const fragmentShader = `
-    precision mediump float;
-    uniform float uHover; 
+    uniform float uHover;
     uniform sampler2D uTexture;
     uniform float uVisibility;
     uniform float uImageMargin;
@@ -122,7 +120,6 @@ export const FrostedDepthMaterial = shaderMaterial(
 );
 
 const auraVertexShader = `
-    precision mediump float;
     uniform float uTime;
     uniform float uScrollVelocity;
     uniform float uHover;
@@ -140,7 +137,6 @@ ${sharedVertexLogic}
 `;
 
 const auraFragmentShader = `
-    precision mediump float;
     uniform float uHover;
     uniform float uVisibility;
     uniform float uAudioKick;

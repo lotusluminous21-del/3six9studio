@@ -10,7 +10,6 @@ const vertexShader = `
 `;
 
 const fragmentShader = `
-    precision mediump float;
     uniform sampler2D uTexture;
     uniform float uTime;
     uniform float uHover;
