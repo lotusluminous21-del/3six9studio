@@ -211,7 +211,7 @@
 }
 
 /* Responsive constraints */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
     .pev-header {
         padding: 1.5rem 1.5rem;
     }

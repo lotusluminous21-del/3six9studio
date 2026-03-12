@@ -63,6 +63,7 @@ function CinematicPostProcessing() {
 
 export default function Scene() {
     const quality = useGPUStore((s) => s.quality);
+    const detected = useGPUStore((s) => s.detected);
     const { categories, fetchCategories } = useAppStore();
 
     useEffect(() => {
@@ -71,6 +72,8 @@ export default function Scene() {
 
     // Scale DPR based on GPU capability
     const dpr: [number, number] = quality === 'low' ? [1, 1] : quality === 'medium' ? [1, 1.25] : [1, 1.5];
+
+    if (!detected) return null; // Wait for GPU to avoid WebGL Context flapping
 
     return (
         <Canvas
@@ -111,6 +114,24 @@ export default function Scene() {
                             eskil={false}
                             offset={0.3}
                             darkness={0.5}
+                        />
+                    </EffectComposer>
+                ) : quality === 'medium' ? (
+                    <EffectComposer multisampling={0}>
+                        <Bloom
+                            luminanceThreshold={0.88}
+                            luminanceSmoothing={0.5}
+                            mipmapBlur={false}
+                            intensity={1.0}
+                        />
+                        <Noise
+                            opacity={0.035}
+                            blendFunction={BlendFunction.SOFT_LIGHT}
+                        />
+                        <Vignette
+                            eskil={false}
+                            offset={0.3}
+                            darkness={0.6}
                         />
                     </EffectComposer>
                 ) : (

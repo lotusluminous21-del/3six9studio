@@ -90,7 +90,7 @@ export default function HeaderUI() {
           z-index: 100;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
           .header-ui {
             top: 1rem;
             right: 1rem;
@@ -115,7 +115,7 @@ export default function HeaderUI() {
           gap: 1rem;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
           .nav-pill {
             padding: 0.5rem 1rem;
             font-size: 0.7rem;

@@ -89,7 +89,7 @@ export default function SidebarUI() {
           z-index: 100;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
           .sidebar-ui {
             bottom: 1.5rem;
             left: 0;
@@ -109,7 +109,7 @@ export default function SidebarUI() {
           color: rgba(255, 255, 255, 0.9);
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
           .sidebar-title {
             font-size: 0.7rem;
             text-align: center;
@@ -125,7 +125,7 @@ export default function SidebarUI() {
           gap: 1rem;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
           .category-list {
             flex-direction: row;
             overflow-x: auto;
@@ -160,7 +160,7 @@ export default function SidebarUI() {
           white-space: nowrap;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
           .category-btn {
             font-size: 0.75rem;
             padding: 0.5rem 0.25rem;
@@ -172,7 +172,7 @@ export default function SidebarUI() {
           transform: translateX(5px);
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
           .category-btn:hover {
             transform: translateY(-2px);
           }
@@ -182,7 +182,7 @@ export default function SidebarUI() {
           opacity: 0.5;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
           .arrow {
             display: none;
           }
