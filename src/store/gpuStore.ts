@@ -24,14 +24,15 @@ export const useGPUStore = create<GPUState>((set, get) => ({
             // Detect mobile explicitly since some powerful phones get Tier 3
             const isMobile = gpuTier.isMobile || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator?.userAgent || '');
 
-            if (tier <= 1) {
-                quality = 'low';
-            } else if (tier === 2 || isMobile) {
-                // Force mobile devices to max out at Medium (no Depth of Field, lower bloom)
-                // This prevents "Error creating WebGL context" on iOS devices with high pixelRatio
-                quality = 'medium';
+            if (isMobile) {
+                // Mobile devices max out at medium to save memory / prevent WebGL context blowouts
+                // Tier 0-1 gets low (no post-processing)
+                quality = tier <= 1 ? 'low' : 'medium';
             } else {
-                quality = 'high';
+                // Desktop devices
+                // Tier 0-1 (Intel HD 4000) gets medium
+                // Tier 2-3 (e.g., Radeon 610M, RTX 3060) gets high
+                quality = tier <= 1 ? 'medium' : 'high';
             }
             set({ tier, quality, detected: true });
             

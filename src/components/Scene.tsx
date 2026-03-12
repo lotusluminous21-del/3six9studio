@@ -98,26 +98,8 @@ export default function Scene() {
                     <FloatingCards />
                 </ScrollControls>
 
-                {quality === 'low' ? (
-                    <EffectComposer multisampling={0}>
-                        <Bloom
-                            luminanceThreshold={0.95}
-                            luminanceSmoothing={0.5}
-                            mipmapBlur={true}
-                            intensity={0.8}
-                        />
-                        <Noise
-                            opacity={0.035}
-                            blendFunction={BlendFunction.SOFT_LIGHT}
-                        />
-                        <Vignette
-                            eskil={false}
-                            offset={0.3}
-                            darkness={0.5}
-                        />
-                    </EffectComposer>
-                ) : quality === 'medium' ? (
-                    <EffectComposer multisampling={0}>
+                {quality === 'low' ? null : quality === 'medium' ? (
+                    <EffectComposer depthBuffer={false} multisampling={0}>
                         <Bloom
                             luminanceThreshold={0.88}
                             luminanceSmoothing={0.5}
