@@ -191,7 +191,7 @@ export default function ProjectExpandedView() {
                                 >
                                     {currentItem.type === 'video' && <VideoPlayer url={currentItem.url} />}
                                     {currentItem.type === 'image' && <ImagePlayer url={currentItem.url} />}
-                                    {currentItem.type === 'audio' && <AudioPlayer url={currentItem.url} title={currentItem.url.split('/').pop()?.split('.')[0] || 'Unknown Track'} />}
+                                    {currentItem.type === 'audio' && <AudioPlayer url={currentItem.url} title={decodeURIComponent(currentItem.url.split('/').pop()?.split('.')[0] || 'Unknown Track')} />}
                                 </motion.div>
                             </AnimatePresence>
                         </div>

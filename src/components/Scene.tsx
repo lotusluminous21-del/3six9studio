@@ -22,7 +22,7 @@ import { useAppStore } from '../store/appStore';
 // Cinematic DoF using world-unit focus distance (no normalized depth hacking)
 function CinematicPostProcessing() {
     const dofRef = useRef<any>(null);
-    const targetBlur = useRef(5);
+    const targetBlur = useRef(2.5);
 
     useFrame((state, delta) => {
         if (!dofRef.current) return;
@@ -31,10 +31,10 @@ function CinematicPostProcessing() {
         const { smoothedKick } = useAudioStore.getState();
 
         // Bokeh intensity: base + scroll-driven + transient-driven
-        const desiredBlur = 5.0 + (velocity > 0.005 ? velocity * 20.0 : 0) + (smoothedKick * 5.0);
+        const desiredBlur = 2.5 + (velocity > 0.005 ? velocity * 10.0 : 0) + (smoothedKick * 2.5);
         targetBlur.current = THREE.MathUtils.lerp(
             targetBlur.current,
-            Math.min(desiredBlur, 15.0),
+            Math.min(desiredBlur, 7.5),
             6 * delta
         );
         dofRef.current.bokehScale = targetBlur.current;
@@ -49,7 +49,7 @@ function CinematicPostProcessing() {
                 ref={dofRef}
                 worldFocusDistance={10}
                 worldFocusRange={4}
-                bokehScale={5}
+                bokehScale={2.5}
                 height={360}
             />
             <ChromaticAberration

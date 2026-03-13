@@ -92,7 +92,7 @@ export default function AudioAnalyzer() {
         
         // Handle smooth audio ducking
         if (audioRef.current) {
-            const targetVolume = store.isDucked ? 0.1 : 1.0;
+            const targetVolume = store.isDucked ? 0.0 : 1.0;
             audioRef.current.volume += (targetVolume - audioRef.current.volume) * 0.1;
         }
 
