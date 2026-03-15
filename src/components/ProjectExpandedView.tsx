@@ -62,7 +62,18 @@ export default function ProjectExpandedView() {
     // Handle audio ducking based on current media type
     useEffect(() => {
         if (!selectedProject || !selectedProject.gallery || selectedProject.gallery.length === 0) return;
-        const currentItem = selectedProject.gallery[currentIndex];
+        const safeIndex = currentIndex >= selectedProject.gallery.length ? 0 : currentIndex;
+        const currentItem = selectedProject.gallery[safeIndex];
+        
+        if (!currentItem) {
+            console.error('[ProjectExpandedView Debug] Audio/Video Ducking: currentItem is undefined', {
+                currentIndex,
+                safeIndex,
+                galleryLength: selectedProject.gallery.length,
+                projectTitle: selectedProject.title
+            });
+            return;
+        }
         
         // Duck the main track if video or audio is playing
         if (currentItem && (currentItem.type === 'video' || currentItem.type === 'audio')) {
@@ -94,7 +105,25 @@ export default function ProjectExpandedView() {
     if (!selectedProject || !selectedProject.gallery || selectedProject.gallery.length === 0) return null;
 
     const gallery = selectedProject.gallery;
-    const currentItem = gallery[currentIndex];
+    const isOutOfBounds = currentIndex >= gallery.length;
+    const safeIndex = isOutOfBounds ? 0 : currentIndex;
+    const currentItem = gallery[safeIndex];
+
+    if (isOutOfBounds) {
+        console.warn(`[ProjectExpandedView Debug] Index out of bounds. Current index: ${currentIndex}, Gallery length: ${gallery.length}. Falling back to 0.`, {
+            projectTitle: selectedProject.title,
+            gallery: selectedProject.gallery
+        });
+    }
+
+    if (!currentItem) {
+        console.error('[ProjectExpandedView Debug] currentItem is still undefined after safeIndex clamp!', {
+            safeIndex,
+            galleryLength: gallery.length,
+            projectData: selectedProject
+        });
+        return null;
+    }
     const isSingleItem = gallery.length === 1;
 
     const handleClose = () => {
@@ -182,7 +211,7 @@ export default function ProjectExpandedView() {
                         <div className="pev-media-wrapper">
                             <AnimatePresence mode="wait">
                                 <motion.div
-                                    key={currentIndex}
+                                    key={safeIndex}
                                     initial={{ opacity: 0, scale: 0.95, filter: "blur(10px)" }}
                                     animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
                                     exit={{ opacity: 0, scale: 1.05, filter: "blur(10px)" }}
@@ -204,7 +233,7 @@ export default function ProjectExpandedView() {
                                 <button
                                     key={idx}
                                     onClick={() => setCurrentIndex(idx)}
-                                    className={`pev-dot ${idx === currentIndex ? 'active' : ''}`}
+                                    className={`pev-dot ${idx === safeIndex ? 'active' : ''}`}
                                     aria-label={`Go to item ${idx + 1}`}
                                 />
                             ))}
