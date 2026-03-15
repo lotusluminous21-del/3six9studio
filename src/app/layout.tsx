@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-    title: '369 Studios | Interactive',
-    description: 'Creative Digital Experiences',
+    title: '3six9studio - Synthetic Realities',
+    description: 'Welcome to 3six9studio - Synthetic Realities',
 };
 
 export const viewport = {
