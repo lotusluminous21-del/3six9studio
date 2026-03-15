@@ -49,7 +49,7 @@ export default function FloatingCards() {
 
     const radius = 10;
     const ySpacing = 4.5;
-    const twistRate = (Math.PI * 2) / 9;
+    const twistRate = -(Math.PI * 2) / 9;
 
     return (
         <group ref={groupRef} position={[0, -5, -10]}>

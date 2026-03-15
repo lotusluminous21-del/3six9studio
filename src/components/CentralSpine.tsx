@@ -20,7 +20,7 @@ import EnvironmentFlora from './EnvironmentFlora';
 
 export default function CentralSpine() {
     // Number of twists from top to bottom
-    const twists = 12;
+    const twists = -12;
     // How wide the helix is
     const radius = 2.5;
     // Total height of the spiral covering all cards

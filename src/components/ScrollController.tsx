@@ -47,9 +47,9 @@ export default function ScrollController() {
         const indexFloat = maxIndex > 0 ? offset * maxIndex : 0;
 
         // Match the spacing and twist of the sequence exactly
-        // ySpacing = 4.5, twistRate = (Math.PI * 2) / 9, groupY = -5
+        // ySpacing = 4.5, twistRate = -(Math.PI * 2) / 9, groupY = -5
         const currentY = -5 - (indexFloat * 4.5);
-        const currentAngle = indexFloat * ((Math.PI * 2) / 9);
+        const currentAngle = indexFloat * (-(Math.PI * 2) / 9);
 
         const camRadius = 20;
         const camX = Math.cos(currentAngle) * camRadius;
