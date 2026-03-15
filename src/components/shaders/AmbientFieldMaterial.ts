@@ -75,13 +75,13 @@ const fragmentShader = `
 
     // ---- Day-Cycle Palette (Deepened for high contrast) ----
     // Dawn (top) → Midday (middle) → Twilight (bottom)
-    vec3 dawnWarm    = vec3(0.12, 0.04, 0.02);   // Deep rust / dark mahogany
-    vec3 dawnGold    = vec3(0.15, 0.08, 0.02);   // Dark amber 
-    vec3 middayBlue  = vec3(0.02, 0.08, 0.15);   // Deep ocean / midnight cyan
-    vec3 middaySage  = vec3(0.02, 0.10, 0.06);   // Deep moss / dark teal
-    vec3 duskViolet  = vec3(0.08, 0.02, 0.15);   // Deep indigo
-    vec3 duskRose    = vec3(0.12, 0.02, 0.08);   // Dark velvet rose
-    vec3 deepNight   = vec3(0.0, 0.0, 0.0);      // Pure black
+    vec3 dawnWarm    = vec3(0.01, 0.01, 0.04);    // Hint of deep blue (top)
+    vec3 dawnGold    = vec3(0.02, 0.01, 0.06);    // Deeper blue
+    vec3 middayBlue  = vec3(0.08, 0.0, 0.04);    // Faint crimson
+    vec3 middaySage  = vec3(0.15, 0.02, 0.0);    // Subtle warm ember
+    vec3 duskViolet  = vec3(0.05, 0.0, 0.08);    // Dark purple
+    vec3 duskRose    = vec3(0.1, 0.0, 0.05);     // Dark rose
+    vec3 deepNight   = vec3(0.01, 0.0, 0.01);    // Near-black
 
     vec3 getPaletteColor(float t) {
         // t: 0 = top (dawn), 1 = bottom (twilight)
@@ -119,7 +119,7 @@ const fragmentShader = `
         // Modulate brightness with noise to create volumetric fog feel
         float fogDensity = 0.6 + noiseField * 0.4;
         // Pushing the mix deeper into deepNight for high contrast
-        vec3 baseColor = mix(deepNight, gradientColor, fogDensity * 0.15); 
+        vec3 baseColor = mix(deepNight, gradientColor, fogDensity * 0.10); 
 
         // ---- 2. Micro-Patterns ----
         // These are intentionally very subtle — visible only on close inspection

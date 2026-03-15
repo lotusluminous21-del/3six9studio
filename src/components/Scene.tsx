@@ -82,13 +82,13 @@ export default function Scene() {
             gl={{ alpha: false, antialias: quality !== 'low' }}
         >
             <AudioAnalyzer />
-            <color attach="background" args={['#020305']} />
+            <color attach="background" args={['#010005']} />
 
             <SceneLights />
 
             <Suspense fallback={null}>
                 {/* Environment for reflections — skip on low-end GPUs */}
-                {quality !== 'low' && <Environment preset="dawn" />}
+                {quality !== 'low' && <Environment preset="night" />}
 
                 <ScrollControls pages={Math.max(3, 2 + categories.length)} damping={0.06} distance={0.8}>
                     <ScrollController />
@@ -101,10 +101,10 @@ export default function Scene() {
                 {quality === 'low' ? null : quality === 'medium' ? (
                     <EffectComposer depthBuffer={false} multisampling={0}>
                         <Bloom
-                            luminanceThreshold={0.88}
+                            luminanceThreshold={0.75}
                             luminanceSmoothing={0.5}
                             mipmapBlur={false}
-                            intensity={1.0}
+                            intensity={1.8}
                         />
                         <Noise
                             opacity={0.035}
@@ -112,17 +112,17 @@ export default function Scene() {
                         />
                         <Vignette
                             eskil={false}
-                            offset={0.3}
-                            darkness={0.6}
+                            offset={0.25}
+                            darkness={0.85}
                         />
                     </EffectComposer>
                 ) : (
                     <EffectComposer multisampling={0}>
                         <Bloom
-                            luminanceThreshold={0.85}
+                            luminanceThreshold={0.65}
                             luminanceSmoothing={0.5}
                             mipmapBlur={true}
-                            intensity={1.4}
+                            intensity={2.2}
                         />
                         <Noise
                             opacity={0.035}
@@ -131,8 +131,8 @@ export default function Scene() {
                         <CinematicPostProcessing />
                         <Vignette
                             eskil={false}
-                            offset={0.3}
-                            darkness={0.7}
+                            offset={0.2}
+                            darkness={0.92}
                         />
                     </EffectComposer>
                 )}

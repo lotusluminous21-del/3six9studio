@@ -114,7 +114,7 @@ const fragmentShader = `
         
         // Base color is a pure, flat black/dark grey for HUD look
         // No reaction to scene light or fresnel
-        vec3 color = vec3(0.005, 0.005, 0.007);
+        vec3 color = vec3(0.02, 0.005, 0.01);
         
         // Optional: Very subtle scanline pattern for AR feel
         float scanline = sin(vUv.y * 200.0) * 0.02;

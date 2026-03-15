@@ -177,8 +177,8 @@ export const OrganicTextMaterial = shaderMaterial(
         uCurvature: 0.0,
         uWobble: 1.0,
         uFlowSpeed: 0.1,
-        uColorOrganic: new THREE.Color('#8d6e63'),  // Muted Earthy Brown
-        uColorSynthesis: new THREE.Color('#ffccbc'), // Muted Skin/Peach tone
+        uColorOrganic: new THREE.Color('#0a0a15'),  // Dark blue-black
+        uColorSynthesis: new THREE.Color('#aabbcc'), // Subtle cool silver
         uSynthesisProgress: 0.2,
     },
     vertexShader,

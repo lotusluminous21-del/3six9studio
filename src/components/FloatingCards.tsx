@@ -42,7 +42,7 @@ export default function FloatingCards() {
             if (project.image && typeof project.image === 'string' && project.image.match(/\.(jpeg|jpg|gif|png)$/i)) {
                 try {
                     useTexture.preload(project.image);
-                } catch(e) {}
+                } catch (e) { }
             }
         });
     }, [categories]);
@@ -95,8 +95,8 @@ function SequenceLogo({ index, radius, ySpacing, twistRate }: { index: number, r
                 }
                 child.material = new OrganicTextMaterial();
                 child.material.transparent = true;
-                child.material.uColorOrganic = new THREE.Color('#8d6e63');
-                child.material.uColorSynthesis = new THREE.Color('#ffccbc');
+                child.material.uColorOrganic = new THREE.Color('#0a0a15');
+                child.material.uColorSynthesis = new THREE.Color('#aabbcc');
                 child.material.uSynthesisProgress = 0.2;
                 child.material.uWobble = 0.5;
             }
@@ -191,11 +191,11 @@ function SequenceLogo({ index, radius, ySpacing, twistRate }: { index: number, r
         <group ref={groupRef} position={[0, y, 0]} rotation={[0, -angle + Math.PI / 2, 0]}>
             <group position={[0, 0.8, radius]}>
                 {/* Individual components centered independently at origin [0,0,z] */}
-                <motion.group 
+                <motion.group
                     ref={unitRef as any}
                     {...({
                         initial: { opacity: 0, scale: 0.8 },
-                        animate: { 
+                        animate: {
                             opacity: isEntered ? 1 : 0,
                             scale: isEntered ? 1 : 0.8
                         },
@@ -231,8 +231,8 @@ function SequenceLogo({ index, radius, ySpacing, twistRate }: { index: number, r
                             {`3six9 Studio`}
                             <organicTextMaterial
                                 ref={textMatRef}
-                                uColorOrganic="#8d6e63"
-                                uColorSynthesis="#ffccbc"
+                                uColorOrganic="#0a0a15"
+                                uColorSynthesis="#aabbcc"
                                 uOpacity={0}
                                 uWobble={0.3}
                                 uRadius={radius}
@@ -310,11 +310,11 @@ function SequenceText({ index, radius, ySpacing, twistRate }: { index: number, r
 
     return (
         <group ref={groupRef} position={[0, y, 0]} rotation={[0, -angle + Math.PI / 2, 0]}>
-            <motion.group 
+            <motion.group
                 position={[0, 0, radius]}
                 {...({
                     initial: { opacity: 0, scale: 0.9, y: 1 },
-                    animate: { 
+                    animate: {
                         opacity: isEntered ? 1 : 0,
                         scale: isEntered ? 1 : 0.9,
                         y: isEntered ? 0 : 1
@@ -358,8 +358,8 @@ function SequenceText({ index, radius, ySpacing, twistRate }: { index: number, r
                         {`SYNTHETIC\nREALITIES`}
                         <organicTextMaterial
                             ref={materialRef}
-                            uColorOrganic="#8d6e63"
-                            uColorSynthesis="#ffccbc"
+                            uColorOrganic="#0a0a15"
+                            uColorSynthesis="#aabbcc"
                             uRadius={radius}
                             uCurvature={1.0}
                             uWobble={0.4}
@@ -396,10 +396,10 @@ function Card({ data, position, angle, index }: {
 
     const isVideo = data.image && (data.image.endsWith('.mp4') || data.image.endsWith('.webm'));
     const isAudio = data.image && (data.image.endsWith('.mp3') || data.image.endsWith('.wav'));
-    
+
     // We only load texture if it's an image. Otherwise we fallback to null or a video texture.
     const texture = isVideo || isAudio ? null : useTexture(data.image) as THREE.Texture;
-    
+
     // For video cover
     const [video] = useState(() => {
         if (isVideo) {
@@ -443,7 +443,7 @@ function Card({ data, position, angle, index }: {
 
         const activationDist = 35;
         const targetVis = camDist < activationDist ? 1 : 0;
-        
+
         // Video performance optimization & robust playback state
         if (video) {
             // Play video when card is visible
@@ -469,7 +469,7 @@ function Card({ data, position, angle, index }: {
 
         // --- ELEGANT SCALE (Card Pop) ---
         // Handled by Framer Motion now. Only adding audio reactive bumps.
-        let targetScale = 1.0; 
+        let targetScale = 1.0;
 
         const { smoothedSnare, smoothedKick } = useAudioStore.getState();
         if (smoothedSnare > 0.05) targetScale += smoothedSnare * 0.04;
@@ -525,7 +525,7 @@ function Card({ data, position, angle, index }: {
     const baseW = 4.5;
     const baseH = 2.7;
     const boundsScale = 1.4;
-    
+
     // Framer Motion spring config
     const springConfig = { type: 'spring', stiffness: 200, damping: 15, mass: 1.2 };
     const delay = 2.2 + index * 0.15; // Delay blossom relative to index
@@ -538,8 +538,8 @@ function Card({ data, position, angle, index }: {
             // Entrance & Hover states declarative
             {...({
                 initial: { scale: 0.001, rotateY: -angle + Math.PI / 2 },
-                animate: { 
-                    scale: hovered ? 1.05 : 1.0, 
+                animate: {
+                    scale: hovered ? 1.05 : 1.0,
                     rotateY: -angle + Math.PI / 2 + (hovered ? (index % 2 === 0 ? 0.1 : -0.1) : 0),
                 },
                 transition: {
@@ -575,7 +575,7 @@ function Card({ data, position, angle, index }: {
                     opacity={0.95}
                     roughness={0.25}
                     metalness={0.1}
-                    color="#40404b"
+                    color="#0d0208"
                     envMapIntensity={1.0}
                     clearcoat={1.0}
                     clearcoatRoughness={0.10}
@@ -600,19 +600,23 @@ function Card({ data, position, angle, index }: {
             </group>
 
             {/* Content Overlay */}
-            <motion.group 
-                ref={textGroupRef as any} 
-                position={[0, 0, 0.15]} 
+            <motion.group
+                ref={textGroupRef as any}
+                position={[0, 0, 0.15]}
                 raycast={() => null}
                 {...({
                     initial: { y: 0, z: 0.15 },
-                    animate: { 
-                        y: hovered ? -0.15 : 0, 
-                        z: hovered ? 0.05 : 0.15 
+                    animate: {
+                        y: hovered ? -0.15 : 0,
+                        z: hovered ? 0.05 : 0.15
                     },
                     transition: springConfig
                 } as any)}
             >
+                {(isAudio || (data.title && data.title.toLowerCase().includes('music'))) && (
+                    <WaveformIndicator hovered={hovered} />
+                )}
+
                 <Text
                     fontSize={0.35}
                     anchorX="center"
@@ -647,5 +651,76 @@ function Card({ data, position, angle, index }: {
                 </Text>
             </motion.group>
         </motion.group>
+    );
+}
+
+function WaveformIndicator({ hovered }: { hovered: boolean }) {
+    const groupRef = useRef<THREE.Group>(null);
+    const barsRef = useRef<THREE.Mesh[]>([]);
+
+    const barCount = 15;
+    const barWidth = 0.06;
+    const gap = 0.04;
+    const totalWidth = barCount * barWidth + (barCount - 1) * gap;
+    const startX = -totalWidth / 2 + barWidth / 2;
+
+    useFrame((state, delta) => {
+        const t = state.clock.elapsedTime;
+        const { isPlaying, smoothedKick, smoothedSnare, highFreqSpike } = useAudioStore.getState();
+        
+        if (groupRef.current) {
+            const targetY = hovered ? 0.3 : 0.55;
+            groupRef.current.position.y = THREE.MathUtils.lerp(groupRef.current.position.y, targetY, 8 * delta);
+        }
+
+        barsRef.current.forEach((bar, i) => {
+            if (!bar) return;
+
+            let height = 0.1;
+            
+            if (isPlaying) {
+                const isBass = i < barCount / 3;
+                const isMid = i >= barCount / 3 && i < (2 * barCount) / 3;
+                
+                let baseHeight = 0.1;
+                if (isBass) baseHeight += smoothedKick * 1.5;
+                else if (isMid) baseHeight += smoothedSnare * 1.5;
+                else baseHeight += highFreqSpike * 1.5;
+                
+                const wave = Math.sin(t * 8 + i * 0.8) * 0.2;
+                height = baseHeight + wave + 0.2;
+            } else {
+                const wave = Math.sin(t * 3 + i * 0.5) * 0.5 + 0.5;
+                const wave2 = Math.cos(t * 4 - i * 0.3) * 0.5 + 0.5;
+                const jitter = Math.sin(t * 20 + i * 1.5) * 0.1;
+                const combined = (wave + wave2) * 0.5;
+                height = 0.15 + combined * 0.4 + jitter;
+            }
+            
+            // Milder hover deformation
+            const targetScaleY = hovered ? height * 0.9 : height * 0.5;
+            bar.scale.y = THREE.MathUtils.lerp(bar.scale.y, Math.max(0.01, targetScaleY), 10 * delta);
+            
+            if (bar.material) {
+                const mat = bar.material as THREE.MeshBasicMaterial;
+                const targetOpacity = hovered ? (0.6 + height * 0.3) : 0.3;
+                mat.opacity = THREE.MathUtils.lerp(mat.opacity, targetOpacity, 8 * delta);
+            }
+        });
+    });
+
+    return (
+        <group ref={groupRef} position={[0, 0.55, 0.05]}>
+            {Array.from({ length: barCount }).map((_, i) => (
+                <mesh
+                    key={i}
+                    position={[startX + i * (barWidth + gap), 0, 0]}
+                    ref={(el: any) => barsRef.current[i] = el}
+                >
+                    <planeGeometry args={[barWidth, 1]} />
+                    <meshBasicMaterial color={hovered ? "#00ffff" : "#ffffff"} transparent opacity={0.3} />
+                </mesh>
+            ))}
+        </group>
     );
 }

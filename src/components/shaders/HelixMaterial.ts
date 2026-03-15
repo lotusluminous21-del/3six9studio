@@ -268,20 +268,20 @@ const fragmentShader = `
             float cells = sin((vUv.x * 8.0 - vUv.y * 12.0) * bandFreq * 1.5) * 0.5 + 0.5;
             float pattern = bands * cells * 1.5;
 
-            // High-Contrast Psychedelic Palette (DMT Image Inspired)
-            vec3 blossomMagenta = vec3(0.95, 0.10, 0.40); // Searing magenta
-            vec3 blossomGold    = vec3(1.00, 0.60, 0.10); // Hyper gold/orange
-            vec3 blossomLavender= vec3(0.20, 0.85, 0.75); // Vibrant teal/cyan replacing lavender
-            vec3 blossomPeach   = vec3(0.95, 0.35, 0.20); // Deep rich orange
+            // High-Contrast Cosmic Nebula Palette
+            vec3 blossomMagenta = vec3(0.9, 0.05, 0.15); // Deep crimson
+            vec3 blossomGold    = vec3(0.9, 0.2, 0.5);  // Pink instead of gold
+            vec3 blossomLavender= vec3(0.6, 0.0, 0.3);  // Dark magenta
+            vec3 blossomPeach   = vec3(0.8, 0.3, 0.0);  // Burnt orange
             
             float paletteMix = noise2D(warpP * 0.3 + uTime * 0.1) * 0.5 + 0.5;
             vec3 blossomAccent = mix(blossomMagenta, blossomLavender, smoothstep(0.2, 0.7, paletteMix));
             blossomAccent = mix(blossomAccent, blossomGold, smoothstep(0.8, 1.0, paletteMix));
             blossomAccent = mix(blossomAccent, blossomPeach, smoothstep(0.0, 0.2, noise2D(warpP * 1.5)));
             
-            // Retain the green strings for filaments
-            vec3 tetherTeal = vec3(0.15, 0.60, 0.55);
-            vec3 tetherSage = vec3(0.50, 0.65, 0.55);
+            // Filament colors — blue core with magenta tips
+            vec3 tetherTeal = vec3(0.1, 0.4, 0.8);  // Blue filaments
+            vec3 tetherSage = vec3(0.7, 0.0, 0.4);  // Magenta tips
             
             // If it is a thin filament, it should just be purely glowing accent color
             if (uIsFilament > 0.5) {
@@ -371,9 +371,9 @@ const fragmentShader = `
             float scanner = sin(vUv.x * scanScale - uTime * 4.0) * 0.5 + 0.5;
             scanner = pow(scanner, 8.0);
             
-            // Synthetic Blue/Cyan palette - strictly controlled brightness to avoid fx engine blowout
-            vec3 techCyan = vec3(0.0, 0.6, 0.9); // Vivid cyan but contained
-            vec3 techBlue = vec3(0.0, 0.1, 0.8);  // Deep rich blue
+            // Blue structural tech palette
+            vec3 techCyan = vec3(0.0, 0.5, 0.9); // Vivid cyan/blue
+            vec3 techBlue = vec3(0.0, 0.1, 0.6);  // Deep rich blue
             vec3 techColor = mix(techBlue, techCyan, scanner + fresnel);
             
             // Reactivity & Visibility
@@ -397,8 +397,8 @@ const fragmentShader = `
             // Sophisticated transition energy: visual "heat" at the boundary of synthesis
             // isOrganic = 0.5 hits the peak (1.0)
             float boundaryHeat = pow(4.0 * isOrganic * (1.0 - isOrganic), 4.0);
-            // Glows cyan on the digital side, bleeding into accent (gold/orange) on the organic side
-            vec3 heatColor = mix(techCyan + vec3(0.5, 0.5, 1.0), uColorAccent + vec3(1.0, 0.5, 0.0), isOrganic);
+            // Glows blue on the digital side, bleeding into accent on the organic side
+            vec3 heatColor = mix(techCyan + vec3(0.3, 0.5, 1.0), uColorAccent + vec3(1.0, 0.5, 0.0), isOrganic);
             color += heatColor * boundaryHeat * 1.4;
             
             // Transparency
@@ -410,7 +410,7 @@ const fragmentShader = `
             // facingRatio ~ 0 at the exact geometric edge; narrow band = clean line, not glow
             float edgeLine = 1.0 - smoothstep(0.0, 0.12, abs(facingRatio));
             float outlineStrength = edgeLine * (1.0 - isOrganic) * 0.4;
-            color += vec3(0.3, 0.7, 1.0) * outlineStrength;
+            color += vec3(0.2, 0.5, 1.0) * outlineStrength;
             alpha = max(alpha, outlineStrength * 0.5);
         }
 
@@ -481,9 +481,9 @@ export const HelixMaterial = shaderMaterial(
         uAudioMid: 0.0,
         uAudioHigh: 0.0,
         uAudioStrength: 1.0,
-        uColorBase: new THREE.Color('#0a0508').convertLinearToSRGB(), // Almost black
-        uColorAccent: new THREE.Color('#ffb347').convertLinearToSRGB(), // Glowing orange key
-        uColorGlance: new THREE.Color('#ff1a66').convertLinearToSRGB(), // Piercing pink/magenta rim
+        uColorBase: new THREE.Color('#020008').convertLinearToSRGB(), // Near-black deep blue
+        uColorAccent: new THREE.Color('#0066cc').convertLinearToSRGB(), // Deep electric blue
+        uColorGlance: new THREE.Color('#cc0055').convertLinearToSRGB(), // Magenta rim accent
     },
     vertexShader,
     fragmentShader

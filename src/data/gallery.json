@@ -227,8 +227,46 @@
     },
     {
         "id": 2,
-        "title": "MINICLIPS",
+        "title": "LOGOS",
         "subtitle": "COLLECTION 3",
+        "image": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/logos/Gemini_Generated_Image_ao3dmaao3dmaao3d.webp",
+        "gallery": [
+            {
+                "type": "image",
+                "url": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/logos/Gemini_Generated_Image_ao3dmaao3dmaao3d.webp",
+                "thumbnail": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/logos/Gemini_Generated_Image_ao3dmaao3dmaao3d.webp"
+            },
+            {
+                "type": "image",
+                "url": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/logos/Gemini_Generated_Image_c71xowc71xowc71x.webp",
+                "thumbnail": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/logos/Gemini_Generated_Image_c71xowc71xowc71x.webp"
+            },
+            {
+                "type": "image",
+                "url": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/logos/Gemini_Generated_Image_hkrgpwhkrgpwhkrg.webp",
+                "thumbnail": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/logos/Gemini_Generated_Image_hkrgpwhkrgpwhkrg.webp"
+            },
+            {
+                "type": "image",
+                "url": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/logos/Gemini_Generated_Image_s69ir2s69ir2s69i.webp",
+                "thumbnail": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/logos/Gemini_Generated_Image_s69ir2s69ir2s69i.webp"
+            },
+            {
+                "type": "image",
+                "url": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/logos/Gemini_Generated_Image_t38kfxt38kfxt38k.webp",
+                "thumbnail": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/logos/Gemini_Generated_Image_t38kfxt38kfxt38k.webp"
+            },
+            {
+                "type": "image",
+                "url": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/logos/Gemini_Generated_Image_udd3zkudd3zkudd3.webp",
+                "thumbnail": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/logos/Gemini_Generated_Image_udd3zkudd3zkudd3.webp"
+            }
+        ]
+    },
+    {
+        "id": 3,
+        "title": "MINICLIPS",
+        "subtitle": "COLLECTION 4",
         "image": "https://storage.googleapis.com/six9studio.firebasestorage.app/thumbnails/miniclips/cossack_A_cinematic_mid-motion_editorial_frame_in_a_long_indu_20dd0cf3-ae27-4033-a507-6396ad93a54c_3.thumb.mp4",
         "gallery": [
             {
@@ -314,9 +352,9 @@
         ]
     },
     {
-        "id": 3,
+        "id": 4,
         "title": "MUSIC",
-        "subtitle": "COLLECTION 4",
+        "subtitle": "COLLECTION 5",
         "image": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/music/3510N%20-%20HYSTERIA.mp3",
         "gallery": [
             {
@@ -447,9 +485,9 @@
         ]
     },
     {
-        "id": 4,
+        "id": 5,
         "title": "PHOTOS",
-        "subtitle": "COLLECTION 5",
+        "subtitle": "COLLECTION 6",
         "image": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/photos/cossack_An_experimental_still_of_a_model_standing_in_front_of_47e892d7-40f2-4893-ba48-88ca54903597_1.webp",
         "gallery": [
             {
@@ -650,40 +688,80 @@
         ]
     },
     {
-        "id": 5,
-        "title": "PRODUCT PHOTOS-VIDEOS",
-        "subtitle": "COLLECTION 6",
-        "image": "https://storage.googleapis.com/six9studio.firebasestorage.app/thumbnails/product%20photos-videos/cossack_Close-up_shot_50mm_anamorphic_lens_f1.8_the_pig_is_dr_af413bf3-18c0-480c-b221-c1177f1cd24e_0.thumb.jpg",
+        "id": 6,
+        "title": "PRODUCT PHOTOS",
+        "subtitle": "COLLECTION 7",
+        "image": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/product%20photos/cossack_Shot_from_below_the_subject_becomes_architectural._Je_afe29b79-afbf-41e2-9147-ca69eec4cae5_2.webp",
         "gallery": [
             {
                 "type": "image",
-                "url": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/product%20photos-videos/cossack_Close-up_shot_50mm_anamorphic_lens_f1.8_the_pig_is_dr_af413bf3-18c0-480c-b221-c1177f1cd24e_0.webp",
-                "thumbnail": "https://storage.googleapis.com/six9studio.firebasestorage.app/thumbnails/product%20photos-videos/cossack_Close-up_shot_50mm_anamorphic_lens_f1.8_the_pig_is_dr_af413bf3-18c0-480c-b221-c1177f1cd24e_0.thumb.jpg"
+                "url": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/product%20photos/cossack_Shot_from_below_the_subject_becomes_architectural._Je_afe29b79-afbf-41e2-9147-ca69eec4cae5_2.webp",
+                "thumbnail": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/product%20photos/cossack_Shot_from_below_the_subject_becomes_architectural._Je_afe29b79-afbf-41e2-9147-ca69eec4cae5_2.webp"
             },
             {
                 "type": "image",
-                "url": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/product%20photos-videos/cossack_Shot_from_below_the_subject_becomes_architectural._Je_afe29b79-afbf-41e2-9147-ca69eec4cae5_2.webp",
-                "thumbnail": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/product%20photos-videos/cossack_Shot_from_below_the_subject_becomes_architectural._Je_afe29b79-afbf-41e2-9147-ca69eec4cae5_2.webp"
+                "url": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/product%20photos/cossack_Top-down_macro_close-up_of_a_Red_Bull_can_lying_in_th_f4ded834-da8b-4027-b54c-d0683dbe029f_3.webp",
+                "thumbnail": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/product%20photos/cossack_Top-down_macro_close-up_of_a_Red_Bull_can_lying_in_th_f4ded834-da8b-4027-b54c-d0683dbe029f_3.webp"
             },
             {
                 "type": "image",
-                "url": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/product%20photos-videos/cossack_Top-down_macro_close-up_of_a_Red_Bull_can_lying_in_th_f4ded834-da8b-4027-b54c-d0683dbe029f_3.webp",
-                "thumbnail": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/product%20photos-videos/cossack_Top-down_macro_close-up_of_a_Red_Bull_can_lying_in_th_f4ded834-da8b-4027-b54c-d0683dbe029f_3.webp"
+                "url": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/product%20photos/Gemini_Generated_Image_55k3mw55k3mw55k3.webp",
+                "thumbnail": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/product%20photos/Gemini_Generated_Image_55k3mw55k3mw55k3.webp"
             },
             {
-                "type": "video",
-                "url": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/product%20photos-videos/hf_20260214_145525_d3389271-8a86-4130-9099-4a7f7f4fba25%20copy.mp4",
-                "thumbnail": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/product%20photos-videos/hf_20260214_145525_d3389271-8a86-4130-9099-4a7f7f4fba25%20copy.mp4"
+                "type": "image",
+                "url": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/product%20photos/Gemini_Generated_Image_5pnw5c5pnw5c5pnw.webp",
+                "thumbnail": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/product%20photos/Gemini_Generated_Image_5pnw5c5pnw5c5pnw.webp"
             },
             {
-                "type": "video",
-                "url": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/product%20photos-videos/hf_20260214_174426_b4b54a2f-20fe-499b-93a7-d9b240cedc56%20copy.mp4",
-                "thumbnail": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/product%20photos-videos/hf_20260214_174426_b4b54a2f-20fe-499b-93a7-d9b240cedc56%20copy.mp4"
+                "type": "image",
+                "url": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/product%20photos/Gemini_Generated_Image_7p70yo7p70yo7p70.webp",
+                "thumbnail": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/product%20photos/Gemini_Generated_Image_7p70yo7p70yo7p70.webp"
             },
             {
-                "type": "video",
-                "url": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/product%20photos-videos/hf_20260215_104156_8fdd5f5c-3bb2-4c20-8962-59f631c0e7dc%20copy.mp4",
-                "thumbnail": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/product%20photos-videos/hf_20260215_104156_8fdd5f5c-3bb2-4c20-8962-59f631c0e7dc%20copy.mp4"
+                "type": "image",
+                "url": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/product%20photos/Gemini_Generated_Image_7wumwc7wumwc7wum.webp",
+                "thumbnail": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/product%20photos/Gemini_Generated_Image_7wumwc7wumwc7wum.webp"
+            },
+            {
+                "type": "image",
+                "url": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/product%20photos/Gemini_Generated_Image_ce2qxwce2qxwce2q.webp",
+                "thumbnail": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/product%20photos/Gemini_Generated_Image_ce2qxwce2qxwce2q.webp"
+            },
+            {
+                "type": "image",
+                "url": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/product%20photos/Gemini_Generated_Image_crr3y9crr3y9crr3.webp",
+                "thumbnail": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/product%20photos/Gemini_Generated_Image_crr3y9crr3y9crr3.webp"
+            },
+            {
+                "type": "image",
+                "url": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/product%20photos/Gemini_Generated_Image_e3mk2qe3mk2qe3mk.webp",
+                "thumbnail": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/product%20photos/Gemini_Generated_Image_e3mk2qe3mk2qe3mk.webp"
+            },
+            {
+                "type": "image",
+                "url": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/product%20photos/Gemini_Generated_Image_f74nhwf74nhwf74n.webp",
+                "thumbnail": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/product%20photos/Gemini_Generated_Image_f74nhwf74nhwf74n.webp"
+            },
+            {
+                "type": "image",
+                "url": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/product%20photos/Gemini_Generated_Image_omgqfkomgqfkomgq.webp",
+                "thumbnail": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/product%20photos/Gemini_Generated_Image_omgqfkomgqfkomgq.webp"
+            },
+            {
+                "type": "image",
+                "url": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/product%20photos/Gemini_Generated_Image_tmork5tmork5tmor.webp",
+                "thumbnail": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/product%20photos/Gemini_Generated_Image_tmork5tmork5tmor.webp"
+            },
+            {
+                "type": "image",
+                "url": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/product%20photos/Gemini_Generated_Image_uo6j2quo6j2quo6j.webp",
+                "thumbnail": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/product%20photos/Gemini_Generated_Image_uo6j2quo6j2quo6j.webp"
+            },
+            {
+                "type": "image",
+                "url": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/product%20photos/Gemini_Generated_Image_xm72o6xm72o6xm72.webp",
+                "thumbnail": "https://storage.googleapis.com/six9studio.firebasestorage.app/3six9/product%20photos/Gemini_Generated_Image_xm72o6xm72o6xm72.webp"
             }
         ]
     }

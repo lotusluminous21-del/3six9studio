@@ -16,7 +16,7 @@ export default function SceneLights() {
 
     // Target intensities for the lights to reach
     const targetKeyIntensity = 2.8;
-    const targetFillIntensity = 0.5;
+    const targetFillIntensity = 0.3;
     const targetRimIntensity = 3.5;
 
     useFrame((state, delta) => {
@@ -51,10 +51,10 @@ export default function SceneLights() {
 
     return (
         <>
-            <ambientLight intensity={0.01} color="#050a10" />
-            <directionalLight ref={keyLightRef} position={[15, 10, 10]} intensity={0} color="#ff8c42" />
-            <directionalLight ref={fillLightRef} position={[-15, -5, 5]} intensity={0} color="#002244" />
-            <directionalLight ref={rimLightRef} position={[0, -15, -10]} intensity={0} color="#ff1a55" />
+            <ambientLight intensity={0.01} color="#050005" />
+            <directionalLight ref={keyLightRef} position={[15, 10, 10]} intensity={0} color="#4488ff" />
+            <directionalLight ref={fillLightRef} position={[-15, -5, 5]} intensity={0} color="#220044" />
+            <directionalLight ref={rimLightRef} position={[0, -15, -10]} intensity={0} color="#cc0066" />
         </>
     );
 }

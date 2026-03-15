@@ -17,7 +17,7 @@ const DustMoteMaterial = shaderMaterial(
         uAudioLow: 0,
         uAudioHigh: 0,
         uEntrance: 0,
-        uColor: new THREE.Color("#d4e8e1") // Soft minty/teal tint
+        uColor: new THREE.Color("#ff88aa") // Soft pink sparks
     },
     // Vertex Shader
     `

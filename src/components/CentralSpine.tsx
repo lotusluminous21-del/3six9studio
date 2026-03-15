@@ -130,6 +130,11 @@ export default function CentralSpine() {
         sMat.uIsFlora = 0;
         sMat.uIsBridge = 0;
         sMat.uScrollDepth = useScrollStore.getState().currentScrollProgress;
+        
+        // Blue-Core / Red-Accent Color Profile
+        sMat.uColorBase = new THREE.Color('#020008').convertLinearToSRGB();   // Near-black deep blue
+        sMat.uColorAccent = new THREE.Color('#0066cc').convertLinearToSRGB(); // Deep electric blue
+        sMat.uColorGlance = new THREE.Color('#cc0055').convertLinearToSRGB(); // Magenta rim accent
 
         const bMat = new HelixMaterial();
         bMat.transparent = true;
@@ -138,6 +143,11 @@ export default function CentralSpine() {
         bMat.uIsFlora = 0;
         bMat.uIsBridge = 1; // Mark as bridge to trigger pulsing
         bMat.uScrollDepth = useScrollStore.getState().currentScrollProgress;
+        
+        // Match the green profile for the bridges
+        bMat.uColorBase = sMat.uColorBase;
+        bMat.uColorAccent = sMat.uColorAccent;
+        bMat.uColorGlance = sMat.uColorGlance;
 
         return { strandMaterial: sMat, bridgeMaterial: bMat };
     }, []);
@@ -242,7 +252,7 @@ export default function CentralSpine() {
             {/* The glow uses a simple cylinder that runs down the middle */}
             <mesh position={[0, startY - (totalHeight / 2), 0]}>
                 <cylinderGeometry args={[0.5, 0.5, totalHeight, 8, 1, true]} />
-                <meshBasicMaterial ref={coreMaterialRef} color="#b4d4ff" transparent={true} opacity={0} depthWrite={false} blending={THREE.AdditiveBlending} />
+                <meshBasicMaterial ref={coreMaterialRef} color="#4488ff" transparent={true} opacity={0} depthWrite={false} blending={THREE.AdditiveBlending} />
             </mesh>
         </group>
     );
