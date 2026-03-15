@@ -217,6 +217,17 @@ export default function ProjectExpandedView() {
                                     exit={{ opacity: 0, scale: 1.05, filter: "blur(10px)" }}
                                     transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                                     className="pev-media-wrapper"
+                                    drag={!isSingleItem ? "x" : false}
+                                    dragConstraints={{ left: 0, right: 0 }}
+                                    dragElastic={0.2}
+                                    onDragEnd={(e, info) => {
+                                        const swipe = info.offset.x;
+                                        if (swipe < -50) {
+                                            handleNext();
+                                        } else if (swipe > 50) {
+                                            handlePrev();
+                                        }
+                                    }}
                                 >
                                     {currentItem.type === 'video' && <VideoPlayer url={currentItem.url} />}
                                     {currentItem.type === 'image' && <ImagePlayer url={currentItem.url} />}
