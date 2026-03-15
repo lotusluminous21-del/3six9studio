@@ -7,6 +7,7 @@ import LoadingScreen from '@/components/LoadingScreen';
 import ProjectExpandedView from '@/components/ProjectExpandedView';
 import WorkContactView from '@/components/WorkContactView';
 import DebugTools from '@/components/DebugTools';
+import { useHistorySync } from '@/hooks/useHistorySync';
 
 // Dynamically import the Scene to avoid SSR issues with Three.js
 const Scene = dynamic(() => import('@/components/Scene'), {
@@ -14,6 +15,8 @@ const Scene = dynamic(() => import('@/components/Scene'), {
 });
 
 export default function Home() {
+    useHistorySync();
+
     return (
         <main>
             <LoadingScreen />
