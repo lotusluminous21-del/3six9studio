@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence, useIsPresent } from 'framer-motion';
 import { X, ChevronLeft, ChevronRight, Volume2 } from 'lucide-react';
 import { useAppStore } from '@/store/appStore';
 import { useAudioStore } from '@/store/audioStore';
@@ -7,8 +7,18 @@ import './ProjectExpandedView.css';
 
 // Helper component for Videos
 const VideoPlayer = ({ url }: { url: string }) => {
+    const isPresent = useIsPresent();
+    const mediaRef = useRef<HTMLVideoElement>(null);
+
+    useEffect(() => {
+        if (!isPresent && mediaRef.current) {
+            mediaRef.current.pause();
+        }
+    }, [isPresent]);
+
     return (
         <video
+            ref={mediaRef}
             src={url}
             controls
             autoPlay
@@ -33,11 +43,21 @@ const ImagePlayer = ({ url }: { url: string }) => {
 
 // Helper component for Audio
 const AudioPlayer = ({ url, title }: { url: string; title: string }) => {
+    const isPresent = useIsPresent();
+    const mediaRef = useRef<HTMLAudioElement>(null);
+
+    useEffect(() => {
+        if (!isPresent && mediaRef.current) {
+            mediaRef.current.pause();
+        }
+    }, [isPresent]);
+
     return (
         <div className="pev-audio-container">
             <Volume2 className="pev-audio-icon" />
             <h3 className="pev-audio-title">{title}</h3>
             <audio
+                ref={mediaRef}
                 src={url}
                 controls
                 autoPlay
