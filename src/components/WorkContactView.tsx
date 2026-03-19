@@ -171,6 +171,15 @@ export default function WorkContactView() {
                                     <span className="wcv-contact-label">EMAIL</span>
                                     <span className="wcv-contact-value">3six9studio@proton.me</span>
                                 </a>
+                                <a 
+                                    href="https://www.instagram.com/3six9.studio/" 
+                                    target="_blank" 
+                                    rel="noopener noreferrer" 
+                                    className="wcv-contact-item"
+                                >
+                                    <span className="wcv-contact-label">INSTAGRAM</span>
+                                    <span className="wcv-contact-value">@3six9.studio</span>
+                                </a>
                             </div>
                         </motion.div>
                     </div>

@@ -39,7 +39,7 @@ export default function FloatingCards() {
     // Preload textures or video metadata safely
     useEffect(() => {
         categories.forEach(project => {
-            if (project.image && typeof project.image === 'string' && project.image.match(/\.(jpeg|jpg|gif|png)$/i)) {
+            if (project.image && typeof project.image === 'string' && project.image.match(/\.(jpeg|jpg|gif|png|webp)$/i)) {
                 try {
                     useTexture.preload(project.image);
                 } catch (e) { }
