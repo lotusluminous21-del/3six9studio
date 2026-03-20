@@ -6,9 +6,8 @@ service firebase.storage {
       // Publicly readable so our Next.js frontend can serve the gallery videos/audio to any visitor 
       allow read: if true;
       
-      // No client-side uploads allowed for maximum security. 
-      // Our Python backend admin script bypasses these rules anyway!
-      allow write: if false;
+      // Only authenticated users can upload/modify/delete files
+      allow write: if request.auth != null;
     }
   }
 }

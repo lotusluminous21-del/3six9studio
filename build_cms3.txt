@@ -1,0 +1,64 @@
+﻿▲ Next.js 16.1.6 (Turbopack)
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 3.1s
+  Running TypeScript ...
+  Collecting page data using 31 workers ...
+  Generating static pages using 31 workers (0/10) ...
+node.exe : Error occurred prerendering pa
+ge "/admin/collections". Read more: https
+://nextjs.org/docs/messages/prerender-err
+or
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C
+:\Users\lotus\AppData\Roaming\ ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecifi 
+   ed: (Error occurred ...prerender-err  
+  or:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeComm 
+   andError
+ 
+Error [FirebaseError]: Firebase: Error (a
+uth/invalid-api-key).
+    at p (C:\Users\lotus\Documents\369\36
+9studios\.next\server\chunks\ssr\_d701fe3
+5._.js:1:33286)
+    at q (C:\Users\lotus\Documents\369\36
+9studios\.next\server\chunks\ssr\_d701fe3
+5._.js:1:33334)
+    at _.instanceFactory (C:\Users\lotus\
+Documents\369\369studios\.next\server\chu
+nks\ssr\_d701fe35._.js:1:84362)
+    at ab.getOrInitializeService (C:\User
+s\lotus\Documents\369\369studios\.next\se
+rver\chunks\ssr\_d701fe35._.js:1:13298)
+    at ab.initialize (C:\Users\lotus\Docu
+ments\369\369studios\.next\server\chunks\
+ssr\_d701fe35._.js:1:12706)
+    at aJ (C:\Users\lotus\Documents\369\3
+69studios\.next\server\chunks\ssr\_d701fe
+35._.js:1:71179)
+    at br (C:\Users\lotus\Documents\369\3
+69studios\.next\server\chunks\ssr\_d701fe
+35._.js:1:85094)
+    at module evaluation (C:\Users\lotus\
+Documents\369\369studios\.next\server\chu
+nks\ssr\_d701fe35._.js:15:29957)
+    at instantiateModule (C:\Users\lotus\
+Documents\369\369studios\.next\server\chu
+nks\ssr\[turbopack]_runtime.js:740:9)
+    at getOrInstantiateModuleFromParent (
+C:\Users\lotus\Documents\369\369studios\.
+next\server\chunks\ssr\[turbopack]_runtim
+e.js:763:12) {
+  code: 'auth/invalid-api-key',
+  customData: [Object],
+  digest: '3692358718'
+}
+Export encountered an error on /admin/col
+lections/page: /admin/collections, exitin
+g the build.
+⨯ Next.js build worker exited with code: 
+1 and signal: null

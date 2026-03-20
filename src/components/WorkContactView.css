@@ -261,3 +261,47 @@
     font-weight: 300;
     font-family: 'Outfit', sans-serif;
 }
+
+/* LOADING SKELETON */
+
+.wcv-loading-skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.wcv-skeleton-card {
+    height: 160px;
+    border-radius: 24px;
+    background: linear-gradient(
+        110deg,
+        rgba(255, 255, 255, 0.02) 0%,
+        rgba(255, 255, 255, 0.06) 40%,
+        rgba(255, 255, 255, 0.02) 60%
+    );
+    background-size: 200% 100%;
+    animation: wcv-shimmer 1.8s ease-in-out infinite;
+}
+
+@keyframes wcv-shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* PRICING TAG */
+
+.wcv-pricing-tag {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: rgba(180, 212, 255, 0.9);
+    background: rgba(180, 212, 255, 0.1);
+    border: 1px solid rgba(180, 212, 255, 0.2);
+    padding: 2px 10px;
+    border-radius: 12px;
+    margin-left: 10px;
+    letter-spacing: 0.02em;
+    font-family: 'Inter', sans-serif;
+    vertical-align: middle;
+}
