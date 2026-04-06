@@ -213,6 +213,13 @@
 
 /* ─── Admin Shell Layout ────────────────────────────────────────────────────── */
 
+/* Override global overflow:hidden (set for portfolio canvas scrolling)
+   so normal scroll works in admin routes */
+html:has(.admin-shell),
+html:has(.admin-shell) body {
+    overflow-y: auto !important;
+}
+
 .admin-shell {
     display: flex;
     min-height: 100vh;
@@ -354,6 +361,7 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    overflow-y: auto;
 }
 
 .admin-topbar {
