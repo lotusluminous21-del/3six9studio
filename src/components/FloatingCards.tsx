@@ -39,7 +39,7 @@ export default function FloatingCards() {
     // Preload textures or video metadata safely
     useEffect(() => {
         categories.forEach(project => {
-            if (project.image && typeof project.image === 'string' && project.image.match(/\.(jpeg|jpg|gif|png|webp)$/i)) {
+            if (project.image && typeof project.image === 'string' && project.image.trim().length > 0 && project.image.match(/\.(jpeg|jpg|gif|png|webp)$/i)) {
                 try {
                     useTexture.preload(project.image);
                 } catch (e) { }
@@ -394,11 +394,17 @@ function Card({ data, position, angle, index }: {
     const _cardWorldPos = useRef(new THREE.Vector3());
     const _targetColor = useRef(new THREE.Color());
 
-    const isVideo = data.image && (data.image.endsWith('.mp4') || data.image.endsWith('.webm'));
-    const isAudio = data.image && (data.image.endsWith('.mp3') || data.image.endsWith('.wav'));
+    // Guard: validate image URL before attempting to load
+    const hasValidImage = !!(data.image && typeof data.image === 'string' && data.image.trim().length > 0);
+    const isVideo = hasValidImage && (data.image.endsWith('.mp4') || data.image.endsWith('.webm'));
+    const isAudio = hasValidImage && (data.image.endsWith('.mp3') || data.image.endsWith('.wav'));
+    const isImageType = hasValidImage && !isVideo && !isAudio;
 
-    // We only load texture if it's an image. Otherwise we fallback to null or a video texture.
-    const texture = isVideo || isAudio ? null : useTexture(data.image) as THREE.Texture;
+    // We only load texture if it's a valid image URL. Otherwise we fallback to null.
+    // useTexture must be called unconditionally (React hooks rule), so use a tiny 1x1 data-URI fallback.
+    const FALLBACK_TEXTURE_URI = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+    const textureUrl = isImageType ? data.image : FALLBACK_TEXTURE_URI;
+    const texture = isVideo || isAudio ? null : useTexture(textureUrl) as THREE.Texture;
 
     // For video cover
     const [video] = useState(() => {

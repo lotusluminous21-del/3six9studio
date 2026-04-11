@@ -154,7 +154,12 @@ export async function bulkMoveGalleryItems(
 
 export async function compileGalleryData(): Promise<PublicCollection[]> {
     const collections = await getCollections();
-    const visibleCollections = collections.filter(c => c.visible !== false);
+    // Filter out hidden collections AND collections with no valid cover image
+    // (an admin may create a collection but not yet upload a cover — don't crash the frontend)
+    const visibleCollections = collections.filter(c =>
+        c.visible !== false &&
+        c.image && typeof c.image === 'string' && c.image.trim().length > 0
+    );
 
     const result: PublicCollection[] = [];
     for (let i = 0; i < visibleCollections.length; i++) {

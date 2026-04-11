@@ -26,9 +26,9 @@ export default function MediaUploader({ onFilesSelected, maxFiles = 50, disabled
                 errs.push(`"${file.name}" — unsupported file type`);
                 continue;
             }
-            if (file.size > 500 * 1024 * 1024) { // 500 MB limit
-                errs.push(`"${file.name}" — file too large (${formatFileSize(file.size)})`);
-                continue;
+            if (file.size > 500 * 1024 * 1024) {
+                // Soft warning — don't block the upload
+                errs.push(`"${file.name}" — large file (${formatFileSize(file.size)}), upload may take a while`);
             }
             validFiles.push(file);
         }
@@ -91,15 +91,18 @@ export default function MediaUploader({ onFilesSelected, maxFiles = 50, disabled
 
             {errors.length > 0 && (
                 <div style={{ marginTop: 10 }}>
-                    {errors.map((err, i) => (
-                        <div key={i} style={{
-                            display: 'flex', alignItems: 'center', gap: 6,
-                            fontSize: 12, color: 'var(--admin-error)', marginBottom: 4
-                        }}>
-                            <AlertCircle size={13} />
-                            {err}
-                        </div>
-                    ))}
+                    {errors.map((err, i) => {
+                        const isWarning = err.includes('upload may take a while');
+                        return (
+                            <div key={i} style={{
+                                display: 'flex', alignItems: 'center', gap: 6,
+                                fontSize: 12, color: isWarning ? '#e6a817' : 'var(--admin-error)', marginBottom: 4
+                            }}>
+                                <AlertCircle size={13} />
+                                {err}
+                            </div>
+                        );
+                    })}
                 </div>
             )}
         </div>
