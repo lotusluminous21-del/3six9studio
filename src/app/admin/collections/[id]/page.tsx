@@ -120,7 +120,11 @@ export default function GalleryItemsPage() {
             const mediaType = detectMediaType(file);
             if (!mediaType) continue;
 
-            const storagePath = `3six9/${collection?.title?.toLowerCase().replace(/\s+/g, '%20') || 'uploads'}/${file.name}`;
+            // Sanitize folder + file names to avoid URL encoding issues in Firebase Storage
+            const sanitize = (s: string) => s.toLowerCase().replace(/[^a-z0-9._-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+            const folder = sanitize(collection?.title || 'uploads');
+            const safeName = sanitize(file.name.replace(/\.[^.]+$/, '')) + '.' + (file.name.split('.').pop() || 'bin');
+            const storagePath = `3six9/${folder}/${safeName}`;
 
             const onProgress = (p: UploadProgress) => {
                 const mappedState: UploadJob['state'] = p.state === 'paused' ? 'running' : p.state;

@@ -31,6 +31,22 @@ declare module '@react-three/fiber' {
 
 extend({ HelixMaterial, OrganicTextMaterial, BannerMaterial, ThumbnailMaterial });
 
+// Helper: extract file extension from a URL, stripping query params and fragments.
+// Firebase Storage URLs look like: .../file.mp4?alt=media&token=... 
+// so .endsWith('.mp4') won't work — we need to parse the path portion.
+function getUrlExtension(url: string): string {
+    try {
+        const pathname = new URL(url).pathname;
+        const lastSegment = decodeURIComponent(pathname.split('/').pop() || '');
+        return (lastSegment.split('.').pop() || '').toLowerCase();
+    } catch {
+        // Fallback for non-URL strings (e.g., relative paths)
+        const cleaned = url.split('?')[0].split('#')[0];
+        return (cleaned.split('.').pop() || '').toLowerCase();
+    }
+}
+
+
 
 export default function FloatingCards() {
     const groupRef = useRef<Group>(null);
@@ -39,10 +55,13 @@ export default function FloatingCards() {
     // Preload textures or video metadata safely
     useEffect(() => {
         categories.forEach(project => {
-            if (project.image && typeof project.image === 'string' && project.image.trim().length > 0 && project.image.match(/\.(jpeg|jpg|gif|png|webp)$/i)) {
-                try {
-                    useTexture.preload(project.image);
-                } catch (e) { }
+            if (project.image && typeof project.image === 'string' && project.image.trim().length > 0) {
+                const ext = getUrlExtension(project.image);
+                if (['jpeg', 'jpg', 'gif', 'png', 'webp'].includes(ext)) {
+                    try {
+                        useTexture.preload(project.image);
+                    } catch (e) { }
+                }
             }
         });
     }, [categories]);
@@ -396,8 +415,9 @@ function Card({ data, position, angle, index }: {
 
     // Guard: validate image URL before attempting to load
     const hasValidImage = !!(data.image && typeof data.image === 'string' && data.image.trim().length > 0);
-    const isVideo = hasValidImage && (data.image.endsWith('.mp4') || data.image.endsWith('.webm'));
-    const isAudio = hasValidImage && (data.image.endsWith('.mp3') || data.image.endsWith('.wav'));
+    const urlExt = hasValidImage ? getUrlExtension(data.image) : '';
+    const isVideo = hasValidImage && ['mp4', 'webm', 'mov'].includes(urlExt);
+    const isAudio = hasValidImage && ['mp3', 'wav', 'ogg', 'flac', 'aac'].includes(urlExt);
     const isImageType = hasValidImage && !isVideo && !isAudio;
 
     // We only load texture if it's a valid image URL. Otherwise we fallback to null.
