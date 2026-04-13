@@ -51,6 +51,57 @@ export interface OptimizationOptions {
     convertToWebP?: boolean;
 }
 
+export interface VideoOptimizationOptions {
+    maxWidthOrHeight?: number;
+    maxFps?: number;
+    crf?: number;
+    preset?: 'ultrafast' | 'superfast' | 'veryfast' | 'faster' | 'fast' | 'medium';
+    audioBitrate?: string;
+    timeoutMs?: number;
+    minSavingsBytes?: number;
+}
+
+const FFMPEG_CORE_BASE = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm';
+let ffmpegPromise: Promise<any> | null = null;
+
+function getOutputVideoName(file: File): string {
+    const baseName = file.name.replace(/\.[^.]+$/, '');
+    return `${baseName}.mp4`;
+}
+
+function raceWithTimeout<T>(promise: Promise<T>, timeoutMs: number, timeoutMessage: string): Promise<T> {
+    if (timeoutMs <= 0) return promise;
+    return new Promise<T>((resolve, reject) => {
+        const timer = setTimeout(() => reject(new Error(timeoutMessage)), timeoutMs);
+        promise
+            .then((result) => {
+                clearTimeout(timer);
+                resolve(result);
+            })
+            .catch((error) => {
+                clearTimeout(timer);
+                reject(error);
+            });
+    });
+}
+
+async function getBrowserFfmpeg() {
+    if (!ffmpegPromise) {
+        ffmpegPromise = (async () => {
+            const [{ FFmpeg }, { toBlobURL }] = await Promise.all([
+                import('@ffmpeg/ffmpeg'),
+                import('@ffmpeg/util'),
+            ]);
+            const ffmpeg = new FFmpeg();
+            const coreURL = await toBlobURL(`${FFMPEG_CORE_BASE}/ffmpeg-core.js`, 'text/javascript');
+            const wasmURL = await toBlobURL(`${FFMPEG_CORE_BASE}/ffmpeg-core.wasm`, 'application/wasm');
+            await ffmpeg.load({ coreURL, wasmURL });
+            return ffmpeg;
+        })();
+    }
+    return ffmpegPromise;
+}
+
 export async function optimizeImage(
     file: File,
     options: OptimizationOptions = {}
@@ -82,6 +133,92 @@ export async function optimizeImage(
         originalSize,
         optimizedSize: optimizedFile.size,
     };
+}
+
+export async function optimizeVideo(
+    file: File,
+    options: VideoOptimizationOptions = {}
+): Promise<{ file: File; originalSize: number; optimizedSize: number; wasOptimized: boolean }> {
+    if (typeof window === 'undefined') {
+        return {
+            file,
+            originalSize: file.size,
+            optimizedSize: file.size,
+            wasOptimized: false,
+        };
+    }
+
+    const {
+        maxWidthOrHeight = 1080,
+        maxFps = 30,
+        crf = 27,
+        preset = 'veryfast',
+        audioBitrate = '128k',
+        timeoutMs = 4 * 60 * 1000,
+        minSavingsBytes = 80 * 1024,
+    } = options;
+
+    const originalSize = file.size;
+    const ffmpeg = await getBrowserFfmpeg();
+    const { fetchFile } = await import('@ffmpeg/util');
+
+    const inputName = 'input-video';
+    const outputName = 'output-video.mp4';
+    const vf = `scale='if(gt(iw,ih),min(${maxWidthOrHeight},iw),-2)':'if(gt(iw,ih),-2,min(${maxWidthOrHeight},ih))',fps=min(source_fps\\,${maxFps})`;
+
+    try {
+        await ffmpeg.writeFile(inputName, await fetchFile(file));
+
+        await raceWithTimeout(
+            ffmpeg.exec([
+                '-i', inputName,
+                '-map', '0:v:0',
+                '-map', '0:a?',
+                '-vf', vf,
+                '-c:v', 'libx264',
+                '-preset', preset,
+                '-crf', String(crf),
+                '-pix_fmt', 'yuv420p',
+                '-movflags', '+faststart',
+                '-c:a', 'aac',
+                '-b:a', audioBitrate,
+                outputName,
+            ]),
+            timeoutMs,
+            'Video optimization timed out'
+        );
+
+        const output = await ffmpeg.readFile(outputName);
+        const optimizedData = output instanceof Uint8Array ? output : new Uint8Array();
+        const optimizedSize = optimizedData.byteLength;
+
+        if (optimizedSize <= 0 || originalSize - optimizedSize < minSavingsBytes) {
+            return {
+                file,
+                originalSize,
+                optimizedSize: originalSize,
+                wasOptimized: false,
+            };
+        }
+
+        const normalizedData = new Uint8Array(optimizedData.byteLength);
+        normalizedData.set(optimizedData);
+        const optimizedBlob = new Blob([normalizedData], { type: 'video/mp4' });
+        const optimizedFile = new File([optimizedBlob], getOutputVideoName(file), {
+            type: 'video/mp4',
+            lastModified: file.lastModified,
+        });
+
+        return {
+            file: optimizedFile,
+            originalSize,
+            optimizedSize: optimizedFile.size,
+            wasOptimized: true,
+        };
+    } finally {
+        await ffmpeg.deleteFile(inputName).catch(() => undefined);
+        await ffmpeg.deleteFile(outputName).catch(() => undefined);
+    }
 }
 
 // ─── Upload ─────────────────────────────────────────────────────────────────────

@@ -2,7 +2,9 @@ import {
     collection, doc, getDocs, getDoc, addDoc, updateDoc, deleteDoc,
     writeBatch, query, orderBy, serverTimestamp, Timestamp
 } from 'firebase/firestore';
+import { getDownloadURL, ref } from 'firebase/storage';
 import { db } from './firebase';
+import { storage } from './firebase';
 
 // ─── Types ──────────────────────────────────────────────────────────────────────
 
@@ -39,6 +41,51 @@ export interface PublicCollection {
 
 const COLLECTIONS_REF = 'portfolio_collections';
 
+function extractStorageObjectPath(urlValue: string): string | null {
+    if (!urlValue) return null;
+    try {
+        const parsed = new URL(urlValue);
+        const bucket = storage.app.options.storageBucket;
+        if (!bucket) return null;
+
+        if (parsed.hostname === 'storage.googleapis.com') {
+            const rawPath = parsed.pathname.startsWith('/') ? parsed.pathname.slice(1) : parsed.pathname;
+            if (rawPath.startsWith(`${bucket}/`)) {
+                return decodeURIComponent(rawPath.slice(bucket.length + 1));
+            }
+        }
+
+        if (parsed.hostname === 'firebasestorage.googleapis.com') {
+            const marker = `/v0/b/${bucket}/o/`;
+            const idx = parsed.pathname.indexOf(marker);
+            if (idx >= 0) {
+                return decodeURIComponent(parsed.pathname.slice(idx + marker.length));
+            }
+        }
+    } catch {
+        return null;
+    }
+    return null;
+}
+
+async function normalizeStorageUrl(urlValue: string): Promise<string> {
+    const objectPath = extractStorageObjectPath(urlValue);
+    if (!objectPath) return urlValue;
+    try {
+        return await getDownloadURL(ref(storage, objectPath));
+    } catch {
+        return urlValue;
+    }
+}
+
+async function normalizeGalleryItemForWrite(item: Omit<GalleryItem, 'id' | 'createdAt'>): Promise<Omit<GalleryItem, 'id' | 'createdAt'>> {
+    const [url, thumbnail] = await Promise.all([
+        normalizeStorageUrl(item.url),
+        normalizeStorageUrl(item.thumbnail),
+    ]);
+    return { ...item, url, thumbnail };
+}
+
 export async function getCollections(): Promise<PortfolioCollection[]> {
     const q = query(collection(db, COLLECTIONS_REF), orderBy('order', 'asc'));
     const snap = await getDocs(q);
@@ -52,8 +99,12 @@ export async function getCollection(id: string): Promise<PortfolioCollection | n
 }
 
 export async function createCollection(data: Omit<PortfolioCollection, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> {
+    const nextData = { ...data };
+    if (typeof data.image === 'string') {
+        nextData.image = await normalizeStorageUrl(data.image);
+    }
     const ref = await addDoc(collection(db, COLLECTIONS_REF), {
-        ...data,
+        ...nextData,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
     });
@@ -61,8 +112,12 @@ export async function createCollection(data: Omit<PortfolioCollection, 'id' | 'c
 }
 
 export async function updateCollection(id: string, data: Partial<PortfolioCollection>): Promise<void> {
+    const nextData: Partial<PortfolioCollection> = { ...data };
+    if (typeof data.image === 'string') {
+        nextData.image = await normalizeStorageUrl(data.image);
+    }
     await updateDoc(doc(db, COLLECTIONS_REF, id), {
-        ...data,
+        ...nextData,
         updatedAt: serverTimestamp(),
     });
 }
@@ -97,15 +152,23 @@ export async function getGalleryItems(collectionId: string): Promise<GalleryItem
 }
 
 export async function addGalleryItem(collectionId: string, item: Omit<GalleryItem, 'id' | 'createdAt'>): Promise<string> {
+    const normalizedItem = await normalizeGalleryItemForWrite(item);
     const ref = await addDoc(itemsRef(collectionId), {
-        ...item,
+        ...normalizedItem,
         createdAt: serverTimestamp(),
     });
     return ref.id;
 }
 
 export async function updateGalleryItem(collectionId: string, itemId: string, data: Partial<GalleryItem>): Promise<void> {
-    await updateDoc(doc(db, COLLECTIONS_REF, collectionId, 'items', itemId), data);
+    const nextData: Partial<GalleryItem> = { ...data };
+    if (typeof data.url === 'string') {
+        nextData.url = await normalizeStorageUrl(data.url);
+    }
+    if (typeof data.thumbnail === 'string') {
+        nextData.thumbnail = await normalizeStorageUrl(data.thumbnail);
+    }
+    await updateDoc(doc(db, COLLECTIONS_REF, collectionId, 'items', itemId), nextData);
 }
 
 export async function deleteGalleryItem(collectionId: string, itemId: string): Promise<void> {

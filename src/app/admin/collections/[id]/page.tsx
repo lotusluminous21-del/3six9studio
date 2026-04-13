@@ -7,7 +7,7 @@ import { useAdminStore } from '@/store/adminStore';
 import ConfirmDialog from '@/components/admin/ConfirmDialog';
 import MediaUploader from '@/components/admin/MediaUploader';
 import {
-    detectMediaType, uploadMedia, uploadOptimizedImage,
+    detectMediaType, optimizeVideo, uploadMedia, uploadOptimizedImage,
     formatFileSize, type UploadProgress
 } from '@/lib/storageService';
 import {
@@ -37,6 +37,7 @@ export default function GalleryItemsPage() {
     const bulkRemoveItems = useAdminStore(s => s.bulkRemoveItems);
     const bulkMoveItems = useAdminStore(s => s.bulkMoveItems);
     const editCollection = useAdminStore(s => s.editCollection);
+    const addToast = useAdminStore(s => s.addToast);
 
     const collection = collections.find(c => c.id === collectionId);
 
@@ -46,11 +47,26 @@ export default function GalleryItemsPage() {
     const [bulkDeleteConfirm, setBulkDeleteConfirm] = useState(false);
     const [moveTargetId, setMoveTargetId] = useState<string | null>(null);
     const [uploads, setUploads] = useState<UploadJob[]>([]);
+    const [videoOptimizeConfirmOpen, setVideoOptimizeConfirmOpen] = useState(false);
+    const optimizeChoiceResolverRef = useRef<((value: boolean) => void) | null>(null);
 
     // Drag-and-drop state
     const dragItemRef = useRef<number | null>(null);
     const dragOverRef = useRef<number | null>(null);
     const [dragIndex, setDragIndex] = useState<number | null>(null);
+
+    const askVideoOptimizationChoice = useCallback(() => {
+        setVideoOptimizeConfirmOpen(true);
+        return new Promise<boolean>((resolve) => {
+            optimizeChoiceResolverRef.current = resolve;
+        });
+    }, []);
+
+    const resolveVideoOptimizationChoice = useCallback((value: boolean) => {
+        setVideoOptimizeConfirmOpen(false);
+        optimizeChoiceResolverRef.current?.(value);
+        optimizeChoiceResolverRef.current = null;
+    }, []);
 
     useEffect(() => {
         fetchGalleryItems(collectionId);
@@ -104,6 +120,11 @@ export default function GalleryItemsPage() {
     // ─── Upload Handler ─────────────────────────────────────────────────────
 
     const handleFilesSelected = useCallback(async (files: File[]) => {
+        const hasVideoFiles = files.some(file => detectMediaType(file) === 'video');
+        const optimizeVideos = hasVideoFiles ? await askVideoOptimizationChoice() : false;
+        let optimizedVideos = 0;
+        let fallbackVideos = 0;
+
         const newUploads: UploadJob[] = files.map((f, i) => ({
             id: `upload-${Date.now()}-${i}`,
             fileName: f.name,
@@ -139,6 +160,22 @@ export default function GalleryItemsPage() {
                 if (mediaType === 'image') {
                     const result = await uploadOptimizedImage(file, storagePath, onProgress);
                     url = result.url;
+                } else if (mediaType === 'video' && optimizeVideos) {
+                    let fileToUpload = file;
+                    try {
+                        const optimized = await optimizeVideo(file);
+                        fileToUpload = optimized.file;
+                        if (optimized.wasOptimized) {
+                            optimizedVideos += 1;
+                        } else {
+                            fallbackVideos += 1;
+                        }
+                    } catch {
+                        fallbackVideos += 1;
+                        fileToUpload = file;
+                    }
+                    const { promise } = uploadMedia(fileToUpload, storagePath, onProgress);
+                    url = await promise;
                 } else {
                     const { promise } = uploadMedia(file, storagePath, onProgress);
                     url = await promise;
@@ -171,7 +208,20 @@ export default function GalleryItemsPage() {
         setTimeout(() => {
             setUploads(prev => prev.filter(u => u.state === 'running'));
         }, 3000);
-    }, [collectionId, collection, items.length, addItem, editCollection]);
+
+        if (optimizeVideos && optimizedVideos > 0) {
+            addToast({
+                type: 'info',
+                message: `Optimized ${optimizedVideos} video${optimizedVideos === 1 ? '' : 's'} before upload.`,
+            });
+        }
+        if (optimizeVideos && fallbackVideos > 0) {
+            addToast({
+                type: 'warning',
+                message: `${fallbackVideos} video${fallbackVideos === 1 ? '' : 's'} used original file after optimization fallback.`,
+            });
+        }
+    }, [collectionId, collection, items.length, addItem, editCollection, askVideoOptimizationChoice, addToast]);
 
     // ─── Set as cover ───────────────────────────────────────────────────────
 
@@ -405,6 +455,16 @@ export default function GalleryItemsPage() {
                     setIsSelecting(false);
                 }}
                 onCancel={() => setBulkDeleteConfirm(false)}
+            />
+
+            <ConfirmDialog
+                open={videoOptimizeConfirmOpen}
+                title="Optimize Videos Before Upload?"
+                message="Video optimization can significantly reduce file size, but it may add processing time before upload starts. Do you want to optimize selected videos now?"
+                confirmLabel="Optimize Videos"
+                cancelLabel="Upload Original Files"
+                onConfirm={() => resolveVideoOptimizationChoice(true)}
+                onCancel={() => resolveVideoOptimizationChoice(false)}
             />
 
             {/* Move Target Picker */}

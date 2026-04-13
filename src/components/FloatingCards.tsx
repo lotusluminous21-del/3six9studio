@@ -459,6 +459,7 @@ function Card({ data, position, angle, index }: {
 
     useFrame((state, delta) => {
         if (!cardRef.current) return;
+        const safeDelta = Math.min(delta, 1 / 30);
 
         const { isEntered, entranceStartTime } = useAppStore.getState();
         const t = isEntered && entranceStartTime ? (performance.now() / 1000) - entranceStartTime : 0;
@@ -489,7 +490,7 @@ function Card({ data, position, angle, index }: {
         entranceRef.current.visibility = THREE.MathUtils.lerp(
             entranceRef.current.visibility,
             targetVis,
-            3 * delta
+            Math.min(1, 3 * safeDelta)
         );
         const scrollVis = entranceRef.current.visibility;
 
@@ -511,7 +512,7 @@ function Card({ data, position, angle, index }: {
         cardRef.current.rotation.x = THREE.MathUtils.lerp(
             cardRef.current.rotation.x,
             organicFloatX,
-            5 * delta
+            Math.min(1, 5 * safeDelta)
         );
 
         // --- IMAGE REVEAL & BLENDING ---
@@ -521,17 +522,25 @@ function Card({ data, position, angle, index }: {
             imageMatRef.current.uHover = THREE.MathUtils.lerp(
                 imageMatRef.current.uHover || 0,
                 hovered ? 1.0 : 0.0,
-                5 * delta
+                Math.min(1, 5 * safeDelta)
             );
         }
 
         // --- TEXT DISSOLVE & SHIFT ---
         const targetTextOpacity = (hovered ? 0.0 : 1.0) * scrollVis;
         if (textMatTitleRef.current) {
-            textMatTitleRef.current.opacity = THREE.MathUtils.lerp(textMatTitleRef.current.opacity, targetTextOpacity, 6 * delta);
+            textMatTitleRef.current.opacity = THREE.MathUtils.lerp(
+                textMatTitleRef.current.opacity,
+                targetTextOpacity,
+                Math.min(1, 6 * safeDelta)
+            );
         }
         if (textMatSubRef.current) {
-            textMatSubRef.current.opacity = THREE.MathUtils.lerp(textMatSubRef.current.opacity, targetTextOpacity, 6 * delta);
+            textMatSubRef.current.opacity = THREE.MathUtils.lerp(
+                textMatSubRef.current.opacity,
+                targetTextOpacity,
+                Math.min(1, 6 * safeDelta)
+            );
         }
 
         // --- GLASS CRYSTALLIZATION ---

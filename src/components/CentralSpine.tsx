@@ -164,6 +164,7 @@ export default function CentralSpine() {
 
     // The core loop: pass time, scroll position, and advance entrance animation
     useFrame((state, delta) => {
+        const safeDelta = Math.min(delta, 1 / 30);
         const { isEntered, entranceStartTime } = useAppStore.getState();
         const t = isEntered && entranceStartTime ? (performance.now() / 1000) - entranceStartTime : 0;
         const scrollDepth = useScrollStore.getState().currentScrollProgress;
@@ -209,10 +210,10 @@ export default function CentralSpine() {
                 rotationVelocityRef.current = THREE.MathUtils.lerp(
                     rotationVelocityRef.current,
                     targetVelocity,
-                    delta * 5.0 // Adjust for faster/slower braking
+                    Math.min(1, safeDelta * 5.0) // Adjust for faster/slower braking
                 );
 
-                rotationRef.current += rotationVelocityRef.current * delta;
+                rotationRef.current += rotationVelocityRef.current * safeDelta;
                 groupRef.current.rotation.y = rotationRef.current;
             }
             // Fade the inner core progressively during the Nexus phase (0.5s - 1.5s)

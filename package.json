@@ -5,14 +5,19 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "compress:firebase-videos": "node scratch/check_firestore.mjs",
+    "repair:video-urls": "node scratch/check_firestore.mjs --repair-urls"
   },
   "dependencies": {
+    "@ffmpeg/ffmpeg": "^0.12.15",
+    "@ffmpeg/util": "^0.12.2",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.5.0",
     "@react-three/postprocessing": "^3.0.4",
     "browser-image-compression": "^2.0.2",
     "firebase": "^12.11.0",
+    "firebase-admin": "^13.8.0",
     "framer-motion": "12.4.13",
     "framer-motion-3d": "12.4.13",
     "gsap": "^3.14.2",
