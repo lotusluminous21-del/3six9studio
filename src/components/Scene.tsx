@@ -144,7 +144,7 @@ export default function Scene() {
 
             <Suspense fallback={null}>
                 {/* Environment for reflections — skip on low-end GPUs */}
-                {quality !== 'low' && <Environment preset="night" />}
+                {quality !== 'low' && <Environment files="/dikhololo_night_1k.hdr" />}
 
                 <ScrollControls
                     pages={Math.max(3, 2 + categories.length)}
