@@ -68,3 +68,281 @@ a {
 .pointer-events-auto {
     pointer-events: auto;
 }
+
+/* ─── Accessibility: visually hidden but present in the DOM / a11y tree ───────── */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* ─── Server-rendered marketing content routes (/services, /contact, /en/*) ──── */
+/* The homepage canvas needs overflow:hidden; the content pages need to scroll.
+   Re-enable normal scrolling only when a .seo-page is present. */
+html:has(.seo-page),
+body:has(.seo-page) {
+    overflow-y: auto;
+    height: auto;
+}
+
+.seo-page {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 5rem;
+    font-family: 'Space Mono', 'Michroma', monospace;
+    line-height: 1.65;
+}
+
+.seo-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.5rem 0 2.5rem;
+    flex-wrap: wrap;
+}
+
+.seo-brand {
+    font-family: 'Michroma', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.04em;
+}
+
+.seo-nav {
+    display: flex;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+    font-size: 0.85rem;
+}
+
+.seo-nav a {
+    color: var(--color-text-dim);
+    transition: color 0.2s ease;
+}
+
+.seo-nav a:hover {
+    color: var(--color-text-primary);
+}
+
+.seo-nav .seo-lang {
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    padding: 0.15rem 0.75rem;
+}
+
+.seo-page h1 {
+    font-family: 'Michroma', sans-serif;
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    line-height: 1.2;
+    margin-bottom: 1rem;
+}
+
+.seo-page h2 {
+    font-family: 'Michroma', sans-serif;
+    font-size: clamp(1.2rem, 3vw, 1.6rem);
+    margin: 2.5rem 0 1rem;
+}
+
+.seo-page h3 {
+    font-size: 1.05rem;
+    margin-bottom: 0.4rem;
+}
+
+.seo-page p {
+    margin-bottom: 1rem;
+    color: var(--color-text-primary);
+}
+
+.seo-eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-size: 0.72rem;
+    color: var(--color-accent-blue);
+    margin-bottom: 0.75rem;
+}
+
+.seo-lede {
+    font-size: 1.1rem;
+    color: var(--color-text-primary);
+}
+
+.seo-cta-row {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+}
+
+.seo-cta {
+    display: inline-block;
+    padding: 0.7rem 1.4rem;
+    border-radius: 30px;
+    background: var(--color-accent-blue);
+    color: #fff;
+    font-size: 0.9rem;
+    transition: opacity 0.2s ease;
+}
+
+.seo-cta-secondary {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: var(--color-text-primary);
+}
+
+.seo-cta:hover {
+    opacity: 0.85;
+}
+
+.seo-service-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.seo-service {
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1.25rem;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.seo-tagline {
+    color: var(--color-text-dim);
+    font-size: 0.95rem;
+}
+
+.seo-ideal-label {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--color-text-dim);
+    margin: 0.75rem 0 0.25rem;
+}
+
+.seo-page ul,
+.seo-page dl {
+    margin: 0 0 1rem 1.1rem;
+}
+
+.seo-page li {
+    margin-bottom: 0.35rem;
+}
+
+.seo-why-list li {
+    list-style: none;
+    position: relative;
+    padding-left: 1.2rem;
+}
+
+.seo-why-list {
+    margin-left: 0;
+}
+
+.seo-why-list li::before {
+    content: '✦';
+    position: absolute;
+    left: 0;
+    color: var(--color-accent-blue);
+}
+
+.seo-comparison table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+}
+
+.seo-comparison th,
+.seo-comparison td {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.65rem 0.85rem;
+    text-align: left;
+    vertical-align: top;
+}
+
+.seo-comparison thead th {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.seo-faq-item {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 0.75rem 0;
+}
+
+.seo-faq-item summary {
+    cursor: pointer;
+    font-family: 'Michroma', sans-serif;
+    font-size: 0.95rem;
+    list-style: revert;
+}
+
+.seo-faq-item p {
+    margin-top: 0.6rem;
+    color: var(--color-text-dim);
+}
+
+.seo-glossary-item {
+    margin-bottom: 0.75rem;
+}
+
+.seo-glossary-item dt {
+    font-weight: 700;
+    color: var(--color-text-primary);
+}
+
+.seo-glossary-item dd {
+    margin-left: 0;
+    color: var(--color-text-dim);
+}
+
+.seo-contact-list {
+    list-style: none;
+    margin-left: 0;
+}
+
+.seo-contact-list li {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.seo-contact-label {
+    min-width: 90px;
+    color: var(--color-text-dim);
+    text-transform: uppercase;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+}
+
+.seo-contact a,
+.seo-footer a {
+    color: var(--color-accent-blue);
+}
+
+.seo-response-note {
+    color: var(--color-text-dim);
+    font-size: 0.9rem;
+}
+
+.seo-footer {
+    margin-top: 3.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.82rem;
+    color: var(--color-text-dim);
+}
+
+.seo-footer-updated {
+    font-size: 0.72rem;
+    opacity: 0.7;
+}

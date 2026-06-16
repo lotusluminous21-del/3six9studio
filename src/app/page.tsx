@@ -1,38 +1,43 @@
-'use client';
+import type { Metadata } from 'next';
+import ImmersiveApp from '@/components/ImmersiveApp';
+import HomeSeoLayer from '@/components/seo/HomeSeoLayer';
+import JsonLd from '@/components/JsonLd';
+import { getContent } from '@/content';
+import { buildAlternates, ogLocale, altOgLocale, absoluteUrl } from '@/lib/seo';
 
-import dynamic from 'next/dynamic';
-import HeaderUI from '@/components/HeaderUI';
-import SidebarUI from '@/components/SidebarUI';
-import LoadingScreen from '@/components/LoadingScreen';
-import ProjectExpandedView from '@/components/ProjectExpandedView';
-import WorkContactView from '@/components/WorkContactView';
-import DebugTools from '@/components/DebugTools';
-import { useHistorySync } from '@/hooks/useHistorySync';
+const LOCALE = 'el' as const;
 
-// Dynamically import the Scene to avoid SSR issues with Three.js
-const Scene = dynamic(() => import('@/components/Scene'), {
-    ssr: false,
-});
+export function generateMetadata(): Metadata {
+    const c = getContent(LOCALE);
+    return {
+        title: { absolute: c.meta.homeTitle },
+        description: c.meta.homeDescription,
+        alternates: buildAlternates('home', LOCALE),
+        openGraph: {
+            title: c.meta.homeTitle,
+            description: c.meta.homeDescription,
+            siteName: '3six9studio',
+            url: absoluteUrl('home', LOCALE),
+            type: 'website',
+            locale: ogLocale(LOCALE),
+            alternateLocale: altOgLocale(LOCALE),
+        },
+    };
+}
 
+/**
+ * Server Component shell. Renders:
+ *  1. <ImmersiveApp/> — the WebGL client island (unchanged experience).
+ *  2. <HomeSeoLayer/> — the server-rendered semantic text equivalent.
+ *  3. <JsonLd/> — the Schema.org @graph.
+ */
 export default function Home() {
-    useHistorySync();
-
+    const content = getContent(LOCALE);
     return (
         <main>
-            <LoadingScreen />
-            <DebugTools />
-            <div className="canvas-container">
-                {/* The Scene component will initialize R3F Canvas */}
-                <Scene />
-            </div>
-
-            <div className="ui-container">
-                <ProjectExpandedView />
-                <WorkContactView />
-                <HeaderUI />
-                <SidebarUI />
-            </div>
-
+            <ImmersiveApp />
+            <HomeSeoLayer content={content} locale={LOCALE} />
+            <JsonLd locale={LOCALE} page="home" />
         </main>
     );
 }

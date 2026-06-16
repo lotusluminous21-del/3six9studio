@@ -3,6 +3,7 @@ import { motion, AnimatePresence, useIsPresent } from 'framer-motion';
 import { X, ChevronLeft, ChevronRight, Volume2 } from 'lucide-react';
 import { useAppStore } from '@/store/appStore';
 import { useAudioStore } from '@/store/audioStore';
+import { deriveAlt } from '@/lib/media';
 import './ProjectExpandedView.css';
 
 // Helper component for Videos
@@ -30,11 +31,11 @@ const VideoPlayer = ({ url }: { url: string }) => {
 };
 
 // Helper component for Images
-const ImagePlayer = ({ url }: { url: string }) => {
+const ImagePlayer = ({ url, alt }: { url: string; alt: string }) => {
     return (
         <img
             src={url}
-            alt="Gallery Image"
+            alt={alt}
             className="pev-media-image"
             draggable={false}
         />
@@ -250,7 +251,7 @@ export default function ProjectExpandedView() {
                                     }}
                                 >
                                     {currentItem.type === 'video' && <VideoPlayer url={currentItem.url} />}
-                                    {currentItem.type === 'image' && <ImagePlayer url={currentItem.url} />}
+                                    {currentItem.type === 'image' && <ImagePlayer url={currentItem.url} alt={(currentItem as { alt?: string }).alt || deriveAlt(currentItem.url)} />}
                                     {currentItem.type === 'audio' && <AudioPlayer url={currentItem.url} title={decodeURIComponent(currentItem.url.split('/').pop()?.split('.')[0] || 'Unknown Track')} />}
                                 </motion.div>
                             </AnimatePresence>

@@ -13,6 +13,8 @@ export interface GalleryItem {
     type: 'image' | 'video' | 'audio';
     url: string;
     thumbnail: string;
+    /** Descriptive alt text / caption for accessibility and image SEO. */
+    alt?: string;
     order: number;
     createdAt?: Timestamp;
 }
@@ -34,7 +36,7 @@ export interface PublicCollection {
     title: string;
     subtitle: string;
     image: string;
-    gallery: { type: string; url: string; thumbnail: string }[];
+    gallery: { type: string; url: string; thumbnail: string; alt?: string }[];
 }
 
 // ─── Collections CRUD ───────────────────────────────────────────────────────────
@@ -237,6 +239,7 @@ export async function compileGalleryData(): Promise<PublicCollection[]> {
                 type: item.type,
                 url: item.url,
                 thumbnail: item.thumbnail,
+                ...(item.alt ? { alt: item.alt } : {}),
             })),
         });
     }
